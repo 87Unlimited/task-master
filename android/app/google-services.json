@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "595642756501",
+    "project_id": "task-master-vt6002cem",
+    "storage_bucket": "task-master-vt6002cem.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:595642756501:android:ba3e4a4a5807ed7cf15a9c",
+        "android_client_info": {
+          "package_name": "com.example.task_master"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9f7iBhwwFlQc5qujb9l1Vx7HDb0Wo-u4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
