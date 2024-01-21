@@ -37,7 +37,7 @@ class _LoginViewState extends State<LoginView> {
           child: Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              color: Colors.white,
+              color: Color(0xFFeef7fe),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -151,6 +151,13 @@ class _LoginViewState extends State<LoginView> {
           labelStyle: const TextStyle(
             fontSize: 17,
             color: Colors.black,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: const BorderSide(
+              width: 1.5,
+              color: Color(0xFF2196F3),
+            ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
