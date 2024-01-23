@@ -65,7 +65,10 @@ class TodoCard extends StatelessWidget {
                         color: iconBgColor,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Icon(iconData, color: iconColor,),
+                      child: Icon(
+                        iconData,
+                        color: iconColor,
+                        size: 40,),
                     ),
                     SizedBox(
                       width: 20,

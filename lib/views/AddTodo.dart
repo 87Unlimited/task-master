@@ -63,7 +63,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                   const SizedBox(
                     height: 12,
                   ),
-                  title(),
+                  textItem(55, 1, _titleController),
                   const SizedBox(
                     height: 30,
                   ),
@@ -87,7 +87,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                   const SizedBox(
                     height: 12,
                   ),
-                  description(),
+                  textItem(155, null, _descriptionController),
                   const SizedBox(
                     height: 30,
                   ),
@@ -231,42 +231,56 @@ class _AddTodoPageState extends State<AddTodoPage> {
           fontSize: 17,
         ),
         maxLines: null,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           border: InputBorder.none,
           hintText: "Task Title",
           hintStyle: TextStyle(
             color: Color(0xff6D6F78),
             fontSize: 17,
           ),
-          contentPadding: EdgeInsets.only(
-            left: 20,
-            right: 20,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide(
+              width: 1.5,
+              color: Color(0xFF2196F3),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget title() {
+  Widget textItem(double height, int ?maxLines, TextEditingController controller) {
     return Container(
-      height: 55,
+      height: height,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-        color: Color(0xFFeef7fe),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextFormField(
-        controller: _titleController,
-        decoration: const InputDecoration(
+        controller: controller,
+        maxLines: maxLines,
+        decoration: InputDecoration(
           border: InputBorder.none,
           hintText: "Task Title",
           hintStyle: TextStyle(
             color: Color(0xff6D6F78),
             fontSize: 17,
           ),
-          contentPadding: EdgeInsets.only(
-            left: 20,
-            right: 20,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide(
+              width: 1.5,
+              color: Color(0xFF2196F3),
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide(
+              width: 1,
+              color: Colors.grey,
+            ),
           ),
         ),
       ),

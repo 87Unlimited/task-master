@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:task_master/widget/TodoCard.dart';
 
@@ -9,41 +10,34 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  final Stream<QuerySnapshot> _stream = FirebaseFirestore.instance.collection("Todo").snapshots();
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Color(0xffF5F6F6),
+        elevation: 0,
+        centerTitle: true,
         title: Text(
-          "Today's Schedule",
+          "Home",
           style: TextStyle(
             fontSize: 34,
             fontWeight: FontWeight.bold,
-            color: Color(0xff6D6F78),
+            color: Colors.blue,
           ),
         ),
-        // actions: [
-        //   CircleAvatar(
-        //
-        //   )
-        // ],
-        bottom: PreferredSize(
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 22),
-              child: Text(
-                "Sat, 21",
-                style: TextStyle(
-                  fontSize: 33,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xff6D6F78),
-                ),
-              ),
-            ),
-          ),
-          preferredSize: Size.fromHeight(35),
+        leading: IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.menu, color: Colors.black),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.person, color: Colors.black),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
@@ -94,29 +88,41 @@ class _HomeViewState extends State<HomeView> {
               label: "",
             ),
           ]),
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        body: Container(
           color: Color(0xffF5F6F6),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 20,
-              ),
-              TodoCard(
-                title: "Wake Up",
-                check: true,
-                iconBgColor: Colors.white,
-                iconColor: Colors.blue,
-                iconData: Icons.alarm,
-                time: "11 AM",
-              ),
-            ],
-          ),
+          child: StreamBuilder(
+              stream: _stream,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                return ListView.builder(
+                    itemCount: snapshot.data?.docs.length,
+                    itemBuilder: (context, index) {
+                      IconData iconData;
+                      Color iconColor;
+                      Map<String, dynamic> document =
+                      snapshot.data?.docs[index].data() as Map<String, dynamic>;
+                      switch (document["category"]) {
+                        case "Work":
+                          iconData = Icons.run_circle_outlined;
+                          iconColor = Colors.black;
+                          break;
+                        default:
+                          iconData = Icons.run_circle_outlined;
+                          iconColor = Colors.red;
+                      }
+                      return TodoCard(
+                      title: document["title"] == null ? "JJ" : document["title"],
+                      check: true,
+                      iconBgColor: Colors.white,
+                      iconColor: iconColor,
+                      iconData: iconData,
+                      time: "11 AM",
+                      );
+                    });
+              }),
         ),
-      ),
     );
   }
 }

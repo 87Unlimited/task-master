@@ -37,7 +37,7 @@ class _LoginViewState extends State<LoginView> {
           child: Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              color: Color(0xFFeef7fe),
+              color: Colors.white,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
