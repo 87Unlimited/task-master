@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-
 class TodoCard extends StatelessWidget {
   const TodoCard({
     Key? key,

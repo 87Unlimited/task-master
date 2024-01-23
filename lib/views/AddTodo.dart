@@ -73,11 +73,11 @@ class _AddTodoPageState extends State<AddTodoPage> {
                   ),
                   Row(
                     children: [
-                      taskSelect("Important", 0xff2664fa),
+                      itemSelect("Important", "task"),
                       const SizedBox(
                         width: 20,
                       ),
-                      taskSelect("planned", 0xff2bc8d9),
+                      itemSelect("Planned", "task"),
                     ],
                   ),
                   const SizedBox(
@@ -98,23 +98,23 @@ class _AddTodoPageState extends State<AddTodoPage> {
                   Wrap(
                     runSpacing: 10,
                     children: [
-                      categorySelect("Food", 0xff899DC0),
+                      itemSelect("Food", "category"),
                       const SizedBox(
                         width: 20,
                       ),
-                      categorySelect("Workout", 0xff899DC0),
+                      itemSelect("Workout", "category"),
                       const SizedBox(
                         width: 20,
                       ),
-                      categorySelect("Work", 0xff899DC0),
+                      itemSelect("Work", "category"),
                       const SizedBox(
                         width: 20,
                       ),
-                      categorySelect("Design", 0xff899DC0),
+                      itemSelect("Design", "category"),
                       const SizedBox(
                         width: 20,
                       ),
-                      categorySelect("Run", 0xff899DC0),
+                      itemSelect("Run", "category"),
                     ],
                   ),
                   const SizedBox(
@@ -154,7 +154,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
           borderRadius: BorderRadius.circular(20),
           color: Color(0xFF2196F3),
         ),
-        child: Center(
+        child: const Center(
           child: Text(
             "Add Task",
             style: TextStyle(
@@ -168,43 +168,23 @@ class _AddTodoPageState extends State<AddTodoPage> {
     );
   }
 
-  Widget taskSelect(String label, int color) {
+  Widget itemSelect(String label, String itemType) {
     return InkWell(
       onTap: () {
         setState(() {
-          type = label;
+          if(itemType=="category") {
+            category = label;
+          } else {
+            type = label;
+          }
         });
       },
       child: Chip(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        backgroundColor: type == label ? Color(0xFF2196F3) : Color(0xFFD6ECFD),
+        backgroundColor: category == label || type == label ? Color(0xFF2196F3) : Color(0xFFbdebff),
         label: Text(label),
         labelStyle: TextStyle(
-          color: type == label ? Colors.white : Color(0xff6D6F78),
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-        ),
-        labelPadding: EdgeInsets.symmetric(
-          horizontal: 17,
-          vertical: 3.8,
-        ),
-      ),
-    );
-  }
-
-  Widget categorySelect(String label, int color) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          category = label;
-        });
-      },
-      child: Chip(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        backgroundColor: category == label ? Color(0xFF2196F3) : Color(0xFFD6ECFD),
-        label: Text(label),
-        labelStyle: TextStyle(
-          color: category == label ? Colors.white : Color(0xff6D6F78),
+          color: category == label || type == label ? Colors.white : Color(0xff167bdf),
           fontSize: 15,
           fontWeight: FontWeight.w600,
         ),

@@ -8,6 +8,7 @@ import 'package:task_master/views/login_view.dart';
 import 'package:task_master/views/register_view.dart';
 import 'package:task_master/views/home_view.dart';
 import 'package:task_master/views/AddTodo.dart';
+import 'package:task_master/views/task_view.dart';
 import 'package:task_master/views/verify_email_view.dart';
 import 'dart:developer' as devtools show log;
 
@@ -25,6 +26,7 @@ void main() {
           '/register/': (context) => const RegisterView(),
           '/home/': (context) => const HomeView(),
           '/addTodo/': (context) => const AddTodoPage(),
+          // '/task/': (context) => TaskView(document: document,),
         }
     ),
   );

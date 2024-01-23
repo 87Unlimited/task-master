@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:task_master/views/task_view.dart';
 import 'package:task_master/widget/TodoCard.dart';
 
 class HomeView extends StatefulWidget {
@@ -96,33 +97,48 @@ class _HomeViewState extends State<HomeView> {
                 if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());
                 }
+                if (snapshot.data!.docs == null) {
+                  return Center(child: Text('No data'));
+                }
                 return ListView.builder(
-                    itemCount: snapshot.data?.docs.length,
-                    itemBuilder: (context, index) {
-                      IconData iconData;
-                      Color iconColor;
-                      Map<String, dynamic> document =
-                      snapshot.data?.docs[index].data() as Map<String, dynamic>;
-                      switch (document["category"]) {
-                        case "Work":
-                          iconData = Icons.run_circle_outlined;
-                          iconColor = Colors.black;
-                          break;
-                        default:
-                          iconData = Icons.run_circle_outlined;
-                          iconColor = Colors.red;
-                      }
-                      return TodoCard(
-                      title: document["title"] == null ? "JJ" : document["title"],
-                      check: true,
-                      iconBgColor: Colors.white,
-                      iconColor: iconColor,
-                      iconData: iconData,
-                      time: "11 AM",
-                      );
-                    });
-              }),
-        ),
+                  itemCount: snapshot.data?.docs.length,
+                  itemBuilder: (context, index) {
+                    IconData iconData;
+                    Color iconColor;
+                    Map<String, dynamic> document = snapshot.data?.docs[index].data() as Map<String, dynamic>;
+                    switch (document["category"]) {
+                      case "Work":
+                        iconData = Icons.run_circle_outlined;
+                        iconColor = Colors.black;
+                        break;
+                      default:
+                        iconData = Icons.run_circle_outlined;
+                        iconColor = Colors.red;
+                    }
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (builder) => TaskView(
+                              document: document,
+                              id: snapshot.data!.docs[index].id!,
+                            ),
+                          ),
+                        );
+                      },
+                      child: TodoCard(
+                        title: document["title"] == null ? "JJ" : document["title"],
+                        check: true,
+                        iconBgColor: Colors.white,
+                        iconColor: iconColor,
+                        iconData: iconData,
+                        time: "11 AM",
+                      ),
+                    );
+                  });
+            }),
+      ),
     );
   }
 }
