@@ -61,17 +61,41 @@ class _TaskViewState extends State<TaskView> {
                       size: 28,
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        edit = !edit;
-                      });
-                    },
-                    icon: Icon(
-                      Icons.edit,
-                      color: edit?Colors.red: Color(0xff4E5058),
-                      size: 28,
-                    ),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            edit = !edit;
+                          });
+                        },
+                        icon: Icon(
+                          Icons.edit,
+                          color: edit?Colors.red: Color(0xff4E5058),
+                          size: 28,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          FirebaseFirestore.instance
+                              .collection("Todo")
+                              .doc(widget.id)
+                              .delete()
+                              .then((value) => {
+                            Navigator.of(context)
+                                .pushNamedAndRemoveUntil(
+                              '/home/',
+                                  (route) => false,
+                            ),
+                          });
+                        },
+                        icon: Icon(
+                          Icons.delete,
+                          color: Color(0xff4E5058),
+                          size: 28,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

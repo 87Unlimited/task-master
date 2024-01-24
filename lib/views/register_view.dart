@@ -2,7 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:task_master/main.dart';
+import 'package:task_master/service/user_model.dart';
+import 'package:task_master/service/user_repository.dart';
 import 'package:task_master/views/login_view.dart';
 import '../firebase_options.dart';
 
@@ -16,6 +19,7 @@ class RegisterView extends StatefulWidget {
 class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+  final userRepo = Get.put(UserRepository());
   bool circular = false;
 
   @override
@@ -32,6 +36,10 @@ class _RegisterViewState extends State<RegisterView> {
     _email.dispose();
     _password.dispose();
     super.dispose();
+  }
+
+  Future<void> createUser(UserModel user) async {
+    await userRepo.createUser(user);
   }
 
   @override
@@ -86,13 +94,19 @@ class _RegisterViewState extends State<RegisterView> {
           });
           final email = _email.text;
           final password = _password.text;
+          final user = UserModel(
+              email: _email.text.trim(),
+              password: _password.text.trim(),
+              fullName: "JJ Jai",
+              phoneNo: "96192876"
+          );
           try {
             final userCredential =
                 await FirebaseAuth.instance.createUserWithEmailAndPassword(
               email: email,
               password: password,
             );
-
+            createUser(user);
             setState(() {
               circular = false;
             });

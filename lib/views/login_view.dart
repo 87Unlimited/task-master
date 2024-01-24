@@ -86,6 +86,10 @@ class _LoginViewState extends State<LoginView> {
               email: email,
               password: password,
             );
+
+            // final newUser = UserMoel(
+            //
+            // )
             setState(() {
               circular = false;
             });

@@ -9,15 +9,18 @@ class TodoCard extends StatelessWidget {
     required this.time,
     required this.check,
     required this.iconBgColor,
+    required this.onChange,
+    required this.index
   }) : super(key: key);
 
   final String title;
   final IconData iconData;
   final Color iconColor;
-  final String time;
-  final bool check;
   final Color iconBgColor;
-
+  final bool check;
+  final String time;
+  final Function onChange;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +37,10 @@ class TodoCard extends StatelessWidget {
                 ),
                 activeColor: Color(0xff6cf8a9),
                 checkColor: Color(0xff0e3e26),
-                value: false,
-                onChanged: (value) {},
+                value: check,
+                onChanged: (change) {
+                  onChange(index);
+                },
               ),
             ),
             data: ThemeData(

@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_master/firebase_options.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:task_master/service/authentication_repository.dart';
 import 'package:task_master/views/AddTodo.dart';
 import 'package:task_master/views/login_view.dart';
+import 'package:task_master/views/profile_view.dart';
 import 'package:task_master/views/register_view.dart';
 import 'package:task_master/views/home_view.dart';
 import 'package:task_master/views/AddTodo.dart';
@@ -14,6 +17,8 @@ import 'dart:developer' as devtools show log;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)
+  //     .then((value) => Get.put(AuthenticationRepository()));
   runApp(
     MaterialApp(
         title: 'Flutter Demo',
@@ -27,6 +32,7 @@ void main() {
           '/home/': (context) => const HomeView(),
           '/addTodo/': (context) => const AddTodoPage(),
           // '/task/': (context) => TaskView(document: document,),
+          '/profile/': (context) => const ProfileView(),
         }
     ),
   );
@@ -48,12 +54,12 @@ class HomePage extends StatelessWidget {
               print(user);
               if (user != null) {
                 if(user.emailVerified) {
-                  return const HomeView();
+                  return const RegisterView();
                 } else {
-                  return const LoginView();
+                  return const RegisterView();
                 }
               } else {
-                return const LoginView();
+                return const RegisterView();
               }
             default:
               return const CircularProgressIndicator();

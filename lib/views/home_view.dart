@@ -12,6 +12,7 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   final Stream<QuerySnapshot> _stream = FirebaseFirestore.instance.collection("Todo").snapshots();
+  List<Select> selected = [];
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,19 @@ class _HomeViewState extends State<HomeView> {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.person, color: Colors.black),
+            icon: InkWell(
+              onTap: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/profile/',
+                      (route) => false,
+                );
+              },
+              child: Icon(
+                Icons.person,
+                color: Colors.black,
+                size: 32,
+              ),
+            ),
           ),
         ],
       ),
@@ -115,6 +128,7 @@ class _HomeViewState extends State<HomeView> {
                         iconData = Icons.run_circle_outlined;
                         iconColor = Colors.red;
                     }
+                    selected.add(Select(id: snapshot.data!.docs[index].id!, checkValue: false));
                     return InkWell(
                       onTap: () {
                         Navigator.push(
@@ -129,11 +143,13 @@ class _HomeViewState extends State<HomeView> {
                       },
                       child: TodoCard(
                         title: document["title"] == null ? "JJ" : document["title"],
-                        check: true,
+                        check: selected[index].checkValue,
                         iconBgColor: Colors.white,
                         iconColor: iconColor,
                         iconData: iconData,
                         time: "11 AM",
+                        index: index,
+                        onChange: onChange,
                       ),
                     );
                   });
@@ -141,4 +157,16 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
+
+  void onChange(int index) {
+    setState(() {
+      selected[index].checkValue = !selected[index].checkValue;
+    });
+  }
+}
+
+class Select {
+  String id;
+  bool checkValue = false;
+  Select({required this.id, required this.checkValue});
 }
