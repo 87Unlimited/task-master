@@ -19,6 +19,8 @@ class RegisterView extends StatefulWidget {
 class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+  late final TextEditingController _fullName;
+  late final TextEditingController _phone;
   final userRepo = Get.put(UserRepository());
   bool circular = false;
 
@@ -27,6 +29,8 @@ class _RegisterViewState extends State<RegisterView> {
     // TODO: implement initState
     _email = TextEditingController();
     _password = TextEditingController();
+    _fullName = TextEditingController();
+    _phone = TextEditingController();
     super.initState();
   }
 
@@ -35,6 +39,8 @@ class _RegisterViewState extends State<RegisterView> {
     // TODO: implement dispose
     _email.dispose();
     _password.dispose();
+    _fullName.dispose();
+    _phone.dispose();
     super.dispose();
   }
 
@@ -66,6 +72,10 @@ class _RegisterViewState extends State<RegisterView> {
                     const SizedBox(height: 20),
                     textItem(_password, 'Password', true),
                     const SizedBox(height: 20),
+                    textItem(_fullName, 'Full Name', false),
+                    const SizedBox(height: 20),
+                    textItem(_phone, 'Phone No.', false),
+                    const SizedBox(height: 20),
                     colorButton('Register'),
                     TextButton(
                       onPressed: () {
@@ -87,19 +97,26 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   Widget colorButton(labelText) {
+    final emailController = _email;
+    final passwordController = _password;
+    final fullNameController = _fullName;
+    final phoneController = _phone;
+
     return InkWell(
         onTap: () async {
           setState(() {
             circular = true;
           });
-          final email = _email.text;
-          final password = _password.text;
+
+          final email = emailController.text.trim();
+          final password = passwordController.text.trim();
           final user = UserModel(
-              email: _email.text.trim(),
-              password: _password.text.trim(),
-              fullName: "JJ Jai",
-              phoneNo: "96192876"
+            email: email,
+            password: password,
+            fullName: fullNameController.text.trim(),
+            phoneNo: phoneController.text.trim(),
           );
+
           try {
             final userCredential =
                 await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -132,8 +149,9 @@ class _RegisterViewState extends State<RegisterView> {
                 errorCode = 'Unknown error';
             }
             if (!context.mounted) return;
-            snackBar = SnackBar(content: Text(errorCode));
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(errorCode)),
+            );
 
             setState(() {
               circular = false;

@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class TaskView extends StatefulWidget {
   const TaskView({super.key, required this.document, required this.id});
@@ -22,9 +24,7 @@ class _TaskViewState extends State<TaskView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    String title = widget.document["title"] == null
-        ? "JJ"
-        : widget.document["title"];
+    String title = widget.document["title"] ?? "Empty Task";
     _titleController = TextEditingController(text: title);
     _descriptionController = TextEditingController(text: widget.document["description"]);
     type = widget.document["task"];
@@ -56,7 +56,7 @@ class _TaskViewState extends State<TaskView> {
                       );
                     },
                     icon: Icon(
-                      CupertinoIcons.arrow_left,
+                      LineAwesomeIcons.angle_left,
                       color: Color(0xff4E5058),
                       size: 28,
                     ),
@@ -197,11 +197,28 @@ class _TaskViewState extends State<TaskView> {
           "task": type,
           "category": category,
           "description": _descriptionController.text,
+        }).whenComplete((){
+          Get.snackbar(
+            "Success",
+            "Task has been updated.",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.blue.withOpacity(0.3),
+            colorText: Colors.white,
+          );
+          Future.delayed(const Duration(seconds: 1), () {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              '/home/',
+                  (route) => false,
+            );
+          });
+        }).catchError((error, stackTrace){
+          Get.snackbar("Error", "Something went wrong. Try again",
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.redAccent.withOpacity(0.1),
+              colorText: Colors.red
+          );
+          print("ERROR - $error");
         });
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          '/home/',
-              (route) => false,
-        );
       },
       child: Container(
         height: 56,

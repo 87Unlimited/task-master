@@ -8,7 +8,7 @@ class AuthenticationRepository extends GetxController {
   static AuthenticationRepository get instance => Get.find();
 
   final _auth = FirebaseAuth.instance;
-  late final Rx<User?> firebaseUser;
+  late Rx<User?> firebaseUser;
 
   @override
   void onReady() {
@@ -20,6 +20,6 @@ class AuthenticationRepository extends GetxController {
   _setInitialScreen(User? user) {
     user == null
         ? Get.offAll(() => const LoginView())
-        : Get.offAll(() => const HomeView());
+        : Get.offAll(() => const LoginView());
   }
 }

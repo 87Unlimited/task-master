@@ -21,7 +21,7 @@ class UserModel {
   }
 
   factory UserModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> document) {
-    final data =document.data()!;
+    final data = document.data()!;
     return UserModel(
       id: document.id,
       email: data["Email"],

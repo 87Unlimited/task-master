@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:task_master/service/user_model.dart';
 import 'package:get/get.dart';
 
@@ -14,8 +15,8 @@ class UserRepository extends GetxController {
         "Success",
         "Your account has been created.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.1),
-        colorText: Colors.green,
+        backgroundColor: Colors.blue.withOpacity(0.3),
+        colorText: Colors.white,
       );
     }).catchError((error, stackTrace){
       Get.snackbar("Error", "Something went wrong. Try again",
@@ -33,10 +34,29 @@ class UserRepository extends GetxController {
     return userData;
   }
 
-  Future<List<UserModel>> allUser() async {
+  Future<List<UserModel>> allUsers() async {
     final snapshot = await _db.collection("Users").get();
     final userData = snapshot.docs.map((e) => UserModel.fromSnapshot(e))
         .toList();
     return userData;
+  }
+
+  Future<void> updateUserRecord(UserModel user) async {
+    await _db.collection("Users").doc(user.id).update(user.toJson()).whenComplete(() {
+      Get.snackbar(
+        "Success",
+        "Your profile has been updated.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.blue.withOpacity(0.3),
+        colorText: Colors.white,
+      );
+    }).catchError((error, stackTrace){
+      Get.snackbar("Error", "Something went wrong. Try again",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent.withOpacity(0.1),
+          colorText: Colors.red
+      );
+      print("ERROR - $error");
+    });
   }
 }

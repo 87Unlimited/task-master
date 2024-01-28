@@ -6,6 +6,7 @@ import 'package:task_master/firebase_options.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:task_master/service/authentication_repository.dart';
 import 'package:task_master/views/AddTodo.dart';
+import 'package:task_master/views/edit_profile_view.dart';
 import 'package:task_master/views/login_view.dart';
 import 'package:task_master/views/profile_view.dart';
 import 'package:task_master/views/register_view.dart';
@@ -15,12 +16,12 @@ import 'package:task_master/views/task_view.dart';
 import 'package:task_master/views/verify_email_view.dart';
 import 'dart:developer' as devtools show log;
 
-void main() {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  // Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)
-  //     .then((value) => Get.put(AuthenticationRepository()));
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  Get.put(AuthenticationRepository());
   runApp(
-    MaterialApp(
+    GetMaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
           primaryColor: Colors.blue,
@@ -33,6 +34,7 @@ void main() {
           '/addTodo/': (context) => const AddTodoPage(),
           // '/task/': (context) => TaskView(document: document,),
           '/profile/': (context) => const ProfileView(),
+          //'/editProfile/': (context) => const EditProfileView(),
         }
     ),
   );
@@ -44,9 +46,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
+        future: FirebaseAuth.instance.authStateChanges().first,
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
@@ -56,7 +56,7 @@ class HomePage extends StatelessWidget {
                 if(user.emailVerified) {
                   return const RegisterView();
                 } else {
-                  return const RegisterView();
+                  return const LoginView();
                 }
               } else {
                 return const RegisterView();
