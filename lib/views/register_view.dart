@@ -115,6 +115,7 @@ class _RegisterViewState extends State<RegisterView> {
             password: password,
             fullName: fullNameController.text.trim(),
             phoneNo: phoneController.text.trim(),
+            profilePicture: "",
           );
 
           try {

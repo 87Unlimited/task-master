@@ -1,8 +1,22 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:task_master/service/profile_controller.dart';
 import 'package:task_master/service/user_model.dart';
+
+import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:task_master/views/profile_view.dart';
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});
@@ -12,36 +26,26 @@ class EditProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<EditProfileView> {
-  static const String profileImage = "assets/images/profile.png";
-  late TextEditingController _email;
-  late TextEditingController _password;
-  late TextEditingController _fullName;
-  late TextEditingController _phone;
-  bool edit = false;
+  static const String defaultImage = "assets/images/profile.png";
+  late final LocalAuthentication auth;
+  String _authorized = 'Not Authorized';
+  bool _isAuthenticating = false;
+  final profileController = Get.put(ProfileController());
 
   @override
   void initState() {
+    auth = LocalAuthentication();
     super.initState();
-    _email = TextEditingController();
-    _password = TextEditingController();
-    _fullName = TextEditingController();
-    _phone = TextEditingController();
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    _email.dispose();
-    _password.dispose();
-    _fullName.dispose();
-    _phone.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final profileController = Get.put(ProfileController());
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xffF5F6F6),
@@ -80,6 +84,10 @@ class _ProfileViewState extends State<EditProfileView> {
                   final fullName = TextEditingController(text: user.fullName);
                   final phoneNo = TextEditingController(text: user.phoneNo);
 
+                  final networkImage = user.profilePicture ?? "";
+                  final image =
+                      networkImage.isNotEmpty ? networkImage : "assets/images/profile.png";
+
                   return Center(
                     child: Column(
                       children: [
@@ -90,26 +98,26 @@ class _ProfileViewState extends State<EditProfileView> {
                               height: 120,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(100),
-                                child: const Image(
-                                  image: AssetImage(profileImage),
+                                child: networkImage.isNotEmpty ? Image.network(
+                                  networkImage,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      image,
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                ) : Image.asset(
+                                  image,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                             ),
                             Positioned(
                               bottom: 0,
                               right: 0,
-                              child: Container(
-                                width: 35,
-                                height: 35,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100),
-                                  color: Colors.blue,
-                                ),
-                                child: const Icon(
-                                    LineAwesomeIcons.alternate_pencil,
-                                    size: 18,
-                                    color: Colors.white),
-                              ),
+                                child: UploadImageButton(user: user),
+                              //UploadImageButton(user: user),
                             ),
                           ],
                         ),
@@ -123,39 +131,68 @@ class _ProfileViewState extends State<EditProfileView> {
                                 prefixIcon: LineAwesomeIcons.mail_bulk,
                                 controller: email,
                               ),
-                              const SizedBox(height: 20,),
+                              const SizedBox(
+                                height: 20,
+                              ),
                               CustomFormField(
                                 initialValue: user.fullName,
                                 labelText: "Full Name",
                                 prefixIcon: LineAwesomeIcons.user,
                                 controller: fullName,
                               ),
-                              const SizedBox(height: 20,),
+                              const SizedBox(
+                                height: 20,
+                              ),
                               CustomFormField(
                                 initialValue: user.phoneNo,
                                 labelText: "Phone",
                                 prefixIcon: LineAwesomeIcons.phone,
                                 controller: phoneNo,
                               ),
-                              const SizedBox(height: 20,),
+                              const SizedBox(
+                                height: 20,
+                              ),
                               CustomFormField(
                                 initialValue: user.password,
                                 labelText: "Password",
                                 prefixIcon: LineAwesomeIcons.lock,
                                 controller: password,
                               ),
-                              const SizedBox(height: 50,),
+                              const SizedBox(
+                                height: 50,
+                              ),
                               InkWell(
                                 onTap: () async {
                                   final userData = UserModel(
-                                      id: id.text.trim(),
-                                      email: email.text.trim(),
-                                      password: password.text.trim(),
-                                      fullName: fullName.text.trim(),
-                                      phoneNo: phoneNo.text.trim()
+                                    id: id.text.trim(),
+                                    email: email.text.trim(),
+                                    password: password.text.trim(),
+                                    fullName: fullName.text.trim(),
+                                    phoneNo: phoneNo.text.trim(),
+                                    profilePicture: networkImage,
                                   );
 
-                                  await profileController.updateRecord(userData);
+                                  await _authenticate(userData);
+
+                                  if (_authorized == "Authorized") {
+                                    Get.snackbar(
+                                      "Authentication Completed",
+                                      _authorized,
+                                      snackPosition: SnackPosition.BOTTOM,
+                                      backgroundColor:
+                                      Colors.blue.withOpacity(0.3),
+                                      colorText: Colors.white,
+                                    );
+                                  } else {
+                                    Get.snackbar(
+                                      "Authentication Failed",
+                                      _authorized,
+                                      snackPosition: SnackPosition.BOTTOM,
+                                      backgroundColor:
+                                          Colors.red.withOpacity(0.3),
+                                      colorText: Colors.red,
+                                    );
+                                  }
                                 },
                                 child: Container(
                                   height: 56,
@@ -193,6 +230,83 @@ class _ProfileViewState extends State<EditProfileView> {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Future<UserModel?> _authenticate(user) async {
+    bool authenticated = false;
+    try{
+      setState(() {
+        _isAuthenticating = true;
+        _authorized = 'Authenticating';
+      });
+      authenticated = await auth.authenticate(
+        localizedReason: "Authenticate to continue",
+        options: const AuthenticationOptions(
+          useErrorDialogs: true,
+          stickyAuth: true,
+          biometricOnly: false,
+        ),
+      );
+      await profileController.updateRecord(user);
+      print("authenticated : $authenticated");
+      setState(() {
+        _isAuthenticating = false;
+      });
+    } on PlatformException catch (e) {
+      print(e);
+      setState(() {
+        _isAuthenticating = false;
+        _authorized = 'Error - ${e.message}';
+      });
+    }
+
+    setState(() => _authorized = authenticated ? 'Authorized' : 'Not Authorized');
+  }
+}
+
+class UploadImageButton extends StatelessWidget {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final firebase_storage.FirebaseStorage _storage =
+      firebase_storage.FirebaseStorage.instance;
+  final ImagePicker _picker = ImagePicker();
+  final UserModel user;
+
+  UploadImageButton({
+    Key? key,
+    required this.user,
+  }) : super(key: key);
+
+  Future<void> _uploadImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+    if (image == null) return;
+
+    final firebase_storage.Reference ref = _storage
+        .ref()
+        .child('assets/images/${DateTime.now().millisecondsSinceEpoch}');
+    final firebase_storage.UploadTask uploadTask = ref.putFile(File(image.path));
+    final firebase_storage.TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
+
+    final String downloadUrl = await snapshot.ref.getDownloadURL();
+
+    await _firestore.collection('Users').doc(user.id).update({'ProfilePicture': downloadUrl}).whenComplete((){
+      Get.to(() => const ProfileView());
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: _uploadImage,
+      child: Container(
+        width: 35,
+        height: 35,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100),
+          color: Colors.blue,
+        ),
+        child:
+            const Icon(LineAwesomeIcons.camera, size: 18, color: Colors.white),
       ),
     );
   }

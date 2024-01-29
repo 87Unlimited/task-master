@@ -1,11 +1,10 @@
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
+import '../service/profile_controller.dart';
+import '../service/user_model.dart';
 import 'edit_profile_view.dart';
 
 class ProfileView extends StatefulWidget {
@@ -16,28 +15,24 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
-  final ImagePicker _picker = ImagePicker();
-  late final XFile? image;
-
   @override
   void initState() {
     super.initState();
-    image = null;
   }
 
   @override
   Widget build(BuildContext context) {
-    const String profileImage = "assets/images/profile.png";
-    var isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final profileController = Get.put(ProfileController());
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffF5F6F6),
+        backgroundColor: const Color(0xffF5F6F6),
         elevation: 0,
         leading: IconButton(
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
                 '/home/',
-                (route) => false,
+                    (route) => false,
               );
             },
             icon: const Icon(
@@ -54,152 +49,134 @@ class _ProfileViewState extends State<ProfileView> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [
-          IconButton(
-              onPressed: () {},
-              icon:
-                  Icon(isDark ? LineAwesomeIcons.sun : LineAwesomeIcons.moon,
-                    color: Color(0xff4E5058),)),
-        ],
       ),
-      backgroundColor: Color(0xffF5F6F6),
+      backgroundColor: const Color(0xffF5F6F6),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(30),
-          child: Column(
-            children: [
-              Stack(
-                children: [
-                  SizedBox(
-                    width: 120,
-                    height: 120,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: const Image(
-                        image: AssetImage(profileImage),
+          child: FutureBuilder(
+            future: profileController.getUserData(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  UserModel user = snapshot.data as UserModel;
+                  final networkImage = user.profilePicture ?? "";
+                  final image =
+                  networkImage.isNotEmpty
+                      ? networkImage
+                      : "assets/images/profile.png";
+
+                  return Column(
+                    children: [
+                      Stack(
+                        children: [
+                          SizedBox(
+                            width: 120,
+                            height: 120,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: networkImage.isNotEmpty ? Image.network(
+                                networkImage,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    image,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              ) : Image.asset(
+                                image,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      width: 35,
-                      height: 35,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Colors.blue,
+                      const SizedBox(
+                        height: 10,
                       ),
-                      child: const Icon(
-                          LineAwesomeIcons.alternate_pencil,
-                          size: 18,
-                          color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                "Name",
-                style: TextStyle(
-                  fontSize: 26,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              Text("Email@jj.com",
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              editButton(),
-              const SizedBox(
-                height: 30,
-              ),
-              const Divider(),
-              const SizedBox(
-                height: 10,
-              ),
-              profileWidget(
-                title: "Settings",
-                icon: LineAwesomeIcons.cog,
-                endIcon: true,
-                onPress: (){},
-              ),
-              profileWidget(
-                title: "Logout",
-                icon: LineAwesomeIcons.alternate_sign_out,
-                textColor: Colors.red,
-                endIcon: false,
-                onPress: (){},
-              ),
-            ],
+                      Text(
+                        user.fullName,
+                        style: const TextStyle(
+                          fontSize: 26,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        user.email,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      editButton(),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      const Divider(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      profileWidget(
+                        title: "Logout",
+                        icon: LineAwesomeIcons.alternate_sign_out,
+                        textColor: Colors.red,
+                        endIcon: false,
+                        onPress: () async {
+                          final shouldLogout = await showLogOutDialog(context);
+                          if (shouldLogout) {
+                            await FirebaseAuth.instance.signOut();
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                "/login/", (_) => false
+                            );
+                          } else {
+                            return;
+                          }
+                        },
+                      ),
+                    ],
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(child: Text(snapshot.error.toString()));
+                } else {
+                  return const Center(child: Text("Something went wrong"));
+                }
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+
           ),
         ),
       ),
-      // child: Container(
-          //   padding: const EdgeInsets.all(100),
-          //   child: FutureBuilder(
-          //     builder: (context, snapshot){
-          //       if(snapshot.connectionState == ConnectionState.done){
-          //         return
-          //       } else {
-          //         return const Center(child: CircularProgressIndicator());
-          //       }
-          //     },
-          //   ),
-          // ),
-
-          // child: SafeArea(
-          //   child: Container(
-          //     width: MediaQuery
-          //         .of(context)
-          //         .size
-          //         .width,
-          //     child: Column(
-          //       crossAxisAlignment: CrossAxisAlignment.center,
-          //       children: [
-          //         CircleAvatar(
-          //           radius: 60,
-          //           backgroundImage: null,
-          //         ),
-          //         SizedBox(
-          //           height: 30,
-          //         ),
-          //         Row(
-          //           mainAxisAlignment: MainAxisAlignment.center,
-          //           children: [
-          //             button(),
-          //             IconButton(
-          //               onPressed: () async {
-          //                 image =
-          //                 await _picker.pickImage(source: ImageSource.gallery);
-          //                 setState(() {
-          //                   image = image;
-          //                 });
-          //               },
-          //               icon: Icon(
-          //                 Icons.add_a_photo,
-          //                 color: Colors.blue,
-          //                 size: 30,
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
     );
+  }
+
+  Future<bool> showLogOutDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Sign out"),
+          content: const Text("Are you sure you want to sign out?"),
+          actions: [
+            TextButton(onPressed: () {
+              Navigator.of(context).pop(false);
+            }, child: const Text("Cancel"),),
+            TextButton(onPressed: () {
+              Navigator.of(context).pop(true);
+            }, child: const Text("Log Out"),),
+          ],
+        );
+      },
+    ).then((value) => value ?? false);
   }
 
   Widget label(String label) {
@@ -217,26 +194,18 @@ class _ProfileViewState extends State<ProfileView> {
   Widget editButton() {
     Get.testMode = true;
     return InkWell(
-      onTap: (){
-        // Navigator.of(context).pushNamedAndRemoveUntil(
-        //   '/editProfile/',
-        //       (route) => false,
-        // );
+      onTap: () {
         Get.to(() => const EditProfileView());
-        // Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //     builder: (builder) => EditProfileView(
-        //   document: document,
-        //   id: snapshot.data!.docs[index].id!,
-        // ),
       },
       child: Container(
         height: 60,
-        width: MediaQuery.of(context).size.width / 2,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width / 2,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50),
-          color: Color(0xFF2196F3),
+          color: const Color(0xFF2196F3),
         ),
         child: const Center(
           child: Text(
@@ -251,56 +220,6 @@ class _ProfileViewState extends State<ProfileView> {
       ),
     );
   }
-
-  // Future<String> uploadImage(String path, XFile image) {
-  //   try {
-  //     final ref = Fire
-  //   } on FirebaseException catch (e) {
-  //     throw TFirebaseException(e.code).message;
-  //   } on FormatException catch (e) {
-  //     throw const TFormatException();
-  //   } on PlatformException catch (e) {
-  //     throw TPlatformException(e.code).message;
-  //   } catch (e) {
-  //
-  //   }
-  // }
-
-  // ImageProvider getImage() {
-  //   if(image != null && image?.path != null) {
-  //     return FileImage(File(image?.path ?? ""));
-  //   }
-  //   return AssetImage("google.png");
-  // }
-
-  // Widget button() {
-  //   return InkWell(
-  //     onTap: () {
-  //
-  //     },
-  //     child: Container(
-  //       height: 40,
-  //       width: MediaQuery
-  //           .of(context)
-  //           .size
-  //           .width / 2,
-  //       decoration: BoxDecoration(
-  //         borderRadius: BorderRadius.circular(20),
-  //         color: Color(0xFF2196F3),
-  //       ),
-  //       child: const Center(
-  //         child: Text(
-  //           "Upload",
-  //           style: TextStyle(
-  //             color: Colors.white,
-  //             fontSize: 20,
-  //             fontWeight: FontWeight.w600,
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 }
 
 class profileWidget extends StatelessWidget {
@@ -334,7 +253,7 @@ class profileWidget extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.black,
           fontSize: 20,
         )?.apply(color: textColor),

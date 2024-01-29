@@ -19,6 +19,7 @@ import 'dart:developer' as devtools show log;
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   Get.put(AuthenticationRepository());
   runApp(
     GetMaterialApp(

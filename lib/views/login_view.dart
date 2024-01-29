@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:developer' as devtools show log;
+
+import 'package:local_auth/local_auth.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -14,11 +17,21 @@ class _LoginViewState extends State<LoginView> {
   late final TextEditingController _password;
   bool circular = false;
 
+  late final LocalAuthentication auth;
+  bool _supportState = false;
+
   @override
   void initState() {
     // TODO: implement initState
     _email = TextEditingController();
     _password = TextEditingController();
+
+    auth = LocalAuthentication();
+    auth.isDeviceSupported().then(
+          (bool isSupported) => setState(() {
+        _supportState = isSupported;
+      }),
+    );
     super.initState();
   }
 
@@ -40,7 +53,11 @@ class _LoginViewState extends State<LoginView> {
               color: Colors.white,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
+                  if(_supportState)
+                    const Text('This device support')
+                  else
+                    const Text('This device do not support'),
                   const Text(
                       "Sign in",
                     style: TextStyle(
@@ -63,7 +80,7 @@ class _LoginViewState extends State<LoginView> {
                       );
                     },
                     child: const Text('Not registered yet? Register here!'),
-                  )
+                  ),
                 ],
               )
           ),
@@ -79,7 +96,7 @@ class _LoginViewState extends State<LoginView> {
           });
           // final email = _email.text;
           // final password = _password.text;
-          final email = "12345@gmail.com";
+          final email = "123@jj.com";
           final password = "123123123";
 
           try {
@@ -89,9 +106,6 @@ class _LoginViewState extends State<LoginView> {
               password: password,
             );
 
-            // final newUser = UserMoel(
-            //
-            // )
             setState(() {
               circular = false;
             });
@@ -135,7 +149,7 @@ class _LoginViewState extends State<LoginView> {
               circular?CircularProgressIndicator()
               : Text(
                 labelText,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 20,
                 ),

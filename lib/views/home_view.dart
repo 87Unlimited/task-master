@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:task_master/views/task_view.dart';
 import 'package:task_master/widget/TodoCard.dart';
+import 'package:local_auth/local_auth.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -13,6 +14,12 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   final Stream<QuerySnapshot> _stream = FirebaseFirestore.instance.collection("Todo").snapshots();
   List<Select> selected = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
