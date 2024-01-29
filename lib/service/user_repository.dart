@@ -7,8 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:task_master/service/user_model.dart';
 import 'package:get/get.dart';
 
-import 'authentication_repository.dart';
-
 class UserRepository extends GetxController {
   static UserRepository get instance => Get.find();
 
@@ -73,8 +71,8 @@ class UserRepository extends GetxController {
       final url = await ref.getDownloadURL();
       return url;
     } catch (e) {
-      print("上傳圖片時發生錯誤：$e");
-      return null; // 或者返回一個適當的錯誤訊息
+      print(e);
+      return null;
     }
   }
 

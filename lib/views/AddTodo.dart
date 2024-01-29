@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 import '../service/profile_controller.dart';
 import '../service/user_model.dart';
@@ -36,7 +35,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 30,),
+              const SizedBox(height: 30,),
               IconButton(
                 onPressed: () {
                   Navigator.of(context).pushNamedAndRemoveUntil(
@@ -160,7 +159,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                                 width: MediaQuery.of(context).size.width,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
-                                  color: Color(0xFF2196F3),
+                                  color: const Color(0xFF2196F3),
                                 ),
                                 child: const Center(
                                   child: Text(
@@ -212,10 +211,10 @@ class _AddTodoPageState extends State<AddTodoPage> {
       },
       child: Chip(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        backgroundColor: category == label || type == label ? Color(0xFF2196F3) : Color(0xFFbdebff),
+        backgroundColor: category == label || type == label ? const Color(0xFF2196F3) : const Color(0xFFbdebff),
         label: Text(label),
         labelStyle: TextStyle(
-          color: category == label || type == label ? Colors.white : Color(0xff167bdf),
+          color: category == label || type == label ? Colors.white : const Color(0xff167bdf),
           fontSize: 15,
           fontWeight: FontWeight.w600,
         ),
@@ -232,12 +231,12 @@ class _AddTodoPageState extends State<AddTodoPage> {
       height: 150,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-        color: Color(0xFFeef7fe),
+        color: const Color(0xFFeef7fe),
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextFormField(
         controller: _descriptionController,
-        style: TextStyle(
+        style: const TextStyle(
           color: Color(0xff4E5058),
           fontSize: 17,
         ),
@@ -245,13 +244,13 @@ class _AddTodoPageState extends State<AddTodoPage> {
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: "Task Title",
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
             color: Color(0xff6D6F78),
             fontSize: 17,
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               width: 1.5,
               color: Color(0xFF2196F3),
             ),
@@ -275,20 +274,20 @@ class _AddTodoPageState extends State<AddTodoPage> {
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: "Task Title",
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
             color: Color(0xff6D6F78),
             fontSize: 17,
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               width: 1.5,
               color: Color(0xFF2196F3),
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               width: 1,
               color: Colors.grey,
             ),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -33,22 +34,8 @@ class _TaskViewState extends State<TaskView> {
     _descriptionController = TextEditingController(text: widget.document["description"]);
     type = widget.document["task"];
     category = widget.document["category"];
-
-    // profileController = Get.put(ProfileController());
-    // user = profileController.getUserData();
   }
 
-  // Future<void> getUserDataAndInitializeStream() async {
-  //   UserModel userData = await profileController.getUserData();
-  //   setState(() {
-  //     user = Future.value(userData);
-  //     _stream = FirebaseFirestore.instance
-  //         .collection("Users")
-  //         .doc(userData.id)
-  //         .collection("Todo")
-  //         .snapshots();
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:task_master/views/task_view.dart';
 import 'package:task_master/widget/TodoCard.dart';
-import 'package:local_auth/local_auth.dart';
 
 import '../service/profile_controller.dart';
 import '../service/user_model.dart';
@@ -152,12 +151,28 @@ class _HomeViewState extends State<HomeView> {
                     Color iconColor;
                     Map<String, dynamic> document = snapshot.data?.docs[index].data() as Map<String, dynamic>;
                     switch (document["category"]) {
+                      case "Housework":
+                        iconData = LineAwesomeIcons.broom;
+                        iconColor = Colors.black;
+                        break;
+                      case "Fitness":
+                        iconData = LineAwesomeIcons.running;
+                        iconColor = Colors.black;
+                        break;
                       case "Work":
-                        iconData = Icons.run_circle_outlined;
+                        iconData = LineAwesomeIcons.briefcase;
+                        iconColor = Colors.black;
+                        break;
+                      case "Personal Development":
+                        iconData = LineAwesomeIcons.school;
+                        iconColor = Colors.black;
+                        break;
+                      case "Entertainment":
+                        iconData = LineAwesomeIcons.gamepad;
                         iconColor = Colors.black;
                         break;
                       default:
-                        iconData = Icons.run_circle_outlined;
+                        iconData = LineAwesomeIcons.tasks;
                         iconColor = Colors.red;
                     }
                     selected.add(Select(id: snapshot.data!.docs[index].id!, checkValue: false));

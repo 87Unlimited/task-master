@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'dart:developer' as devtools show log;
 
 import 'package:local_auth/local_auth.dart';
 
@@ -55,7 +53,7 @@ class _LoginViewState extends State<LoginView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   if(_supportState)
-                    const Text('This device support')
+                    const Text('This device support authentication')
                   else
                     const Text('This device do not support'),
                   const Text(
@@ -96,8 +94,6 @@ class _LoginViewState extends State<LoginView> {
           });
           final email = _email.text;
           final password = _password.text;
-          // final email = "123@jj.com";
-          // final password = "123123123";
 
           try {
             final userCredential = await FirebaseAuth.instance
@@ -146,7 +142,7 @@ class _LoginViewState extends State<LoginView> {
             ),
             child: Center(
               child:
-              circular?CircularProgressIndicator()
+              circular?const CircularProgressIndicator()
               : Text(
                 labelText,
                 style: const TextStyle(
@@ -160,7 +156,7 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Widget textItem(controller, labelText, obscure) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width - 70,
       height: 55,
       child: TextFormField(
@@ -181,7 +177,7 @@ class _LoginViewState extends State<LoginView> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               width: 1,
               color: Colors.grey,
             ),

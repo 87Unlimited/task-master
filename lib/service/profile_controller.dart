@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:task_master/service/user_model.dart';
@@ -7,8 +6,6 @@ import 'authentication_repository.dart';
 
 class ProfileController extends GetxController {
   static ProfileController get instance => Get.find();
-
-  //Rx<UserModel> user = UserModel.empty().obs;
 
   final _authRepo = Get.put(AuthenticationRepository());
   final _userRepo = Get.put(UserRepository());

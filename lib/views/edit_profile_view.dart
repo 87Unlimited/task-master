@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -12,10 +10,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:task_master/service/profile_controller.dart';
 import 'package:task_master/service/user_model.dart';
 
-import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:task_master/views/profile_view.dart';
 
 class EditProfileView extends StatefulWidget {

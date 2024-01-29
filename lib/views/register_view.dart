@@ -1,13 +1,9 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:task_master/main.dart';
 import 'package:task_master/service/user_model.dart';
 import 'package:task_master/service/user_repository.dart';
-import 'package:task_master/views/login_view.dart';
-import '../firebase_options.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -168,7 +164,7 @@ class _RegisterViewState extends State<RegisterView> {
             ),
             child: Center(
               child:
-              circular?CircularProgressIndicator()
+              circular?const CircularProgressIndicator()
                   : Text(
                 labelText,
                 style: const TextStyle(
@@ -181,7 +177,7 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   Widget textItem(controller, labelText, obscure) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width - 70,
       height: 55,
       child: TextFormField(
@@ -217,7 +213,7 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   Widget buttonItem(String imagepath, String buttonName, double size) {
-    return Container(
+    return SizedBox(
         width: MediaQuery.of(context).size.width-60,
         height: 60,
         child: Card(
