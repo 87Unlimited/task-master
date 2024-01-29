@@ -24,11 +24,15 @@ class TodoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: Row(
         children: [
           Theme(
+            data: ThemeData(
+              primarySwatch: Colors.blue,
+              unselectedWidgetColor: Colors.black,
+            ),
             child: Transform.scale(
               scale: 1.5,
               child: Checkbox(
@@ -43,13 +47,9 @@ class TodoCard extends StatelessWidget {
                 },
               ),
             ),
-            data: ThemeData(
-              primarySwatch: Colors.blue,
-              unselectedWidgetColor: Colors.black,
-            ),
           ),
           Expanded(
-            child: Container(
+            child: SizedBox(
               height: 75,
               child: Card(
                 shape: RoundedRectangleBorder(
@@ -58,7 +58,7 @@ class TodoCard extends StatelessWidget {
                 color: Colors.white,
                 child: Row(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 15,
                     ),
                     Container(
@@ -73,13 +73,13 @@ class TodoCard extends StatelessWidget {
                         color: iconColor,
                         size: 40,),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 20,
                     ),
                     Expanded(
                       child: Text(
                         title,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           letterSpacing: 1,
                           fontWeight: FontWeight.w600,
@@ -89,12 +89,12 @@ class TodoCard extends StatelessWidget {
                     ),
                     Text(
                       time,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 15,
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 20,
                     ),
                   ],

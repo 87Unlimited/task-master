@@ -152,7 +152,6 @@ class _ProfileViewState extends State<ProfileView> {
                 return const Center(child: CircularProgressIndicator());
               }
             },
-
           ),
         ),
       ),

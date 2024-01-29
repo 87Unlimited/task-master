@@ -26,7 +26,6 @@ class EditProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<EditProfileView> {
-  static const String defaultImage = "assets/images/profile.png";
   late final LocalAuthentication auth;
   String _authorized = 'Not Authorized';
   bool _isAuthenticating = false;

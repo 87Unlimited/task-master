@@ -1,8 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:task_master/views/task_view.dart';
 import 'package:task_master/widget/TodoCard.dart';
 import 'package:local_auth/local_auth.dart';
+
+import '../service/profile_controller.dart';
+import '../service/user_model.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -12,13 +17,30 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  final Stream<QuerySnapshot> _stream = FirebaseFirestore.instance.collection("Todo").snapshots();
+  late ProfileController profileController;
+  late Future<UserModel> user;
+  Stream<QuerySnapshot>? _stream;
   List<Select> selected = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    profileController = Get.put(ProfileController());
+    user = profileController.getUserData();
+    getUserDataAndInitializeStream();
+  }
+
+  Future<void> getUserDataAndInitializeStream() async {
+    UserModel userData = await profileController.getUserData();
+    setState(() {
+      user = Future.value(userData);
+      _stream = FirebaseFirestore.instance
+          .collection("Users")
+          .doc(userData.id)
+          .collection("Todo")
+          .snapshots();
+    });
   }
 
   @override
@@ -26,20 +48,15 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Color(0xffF5F6F6),
+        backgroundColor: const Color(0xffF5F6F6),
         elevation: 0,
-        centerTitle: true,
-        title: Text(
-          "Home",
+        title: const Text(
+          "Task Master",
           style: TextStyle(
             fontSize: 34,
             fontWeight: FontWeight.bold,
             color: Colors.blue,
           ),
-        ),
-        leading: IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.menu, color: Colors.black),
         ),
         actions: [
           IconButton(
@@ -51,7 +68,7 @@ class _HomeViewState extends State<HomeView> {
                       (route) => false,
                 );
               },
-              child: Icon(
+              child: const Icon(
                 Icons.person,
                 color: Colors.black,
                 size: 32,
@@ -63,7 +80,7 @@ class _HomeViewState extends State<HomeView> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
           items: [
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
                 icon: Icon(
                   Icons.home,
                   size: 32,
@@ -82,7 +99,7 @@ class _HomeViewState extends State<HomeView> {
                 child: Container(
                   height: 52,
                   width: 52,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
                         colors: [
@@ -91,7 +108,7 @@ class _HomeViewState extends State<HomeView> {
                         ],
                       )
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.add,
                     size: 32,
                     color: Colors.white,
@@ -101,24 +118,32 @@ class _HomeViewState extends State<HomeView> {
               label: "",
             ),
             BottomNavigationBarItem(
-              icon: Icon(
-                Icons.settings,
-                size: 32,
-                color: Color(0xff6D6F78),
+              icon: InkWell(
+                onTap: () {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/profile/',
+                        (route) => false,
+                  );
+                },
+                child: const Icon(
+                  Icons.person,
+                  color: Colors.black,
+                  size: 32,
+                ),
               ),
               label: "",
             ),
           ]),
         body: Container(
-          color: Color(0xffF5F6F6),
+          color: const Color(0xffF5F6F6),
           child: StreamBuilder(
               stream: _stream,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.data!.docs == null) {
-                  return Center(child: Text('No data'));
+                  return const Center(child: Text('No data'));
                 }
                 return ListView.builder(
                   itemCount: snapshot.data?.docs.length,
@@ -149,7 +174,7 @@ class _HomeViewState extends State<HomeView> {
                         );
                       },
                       child: TodoCard(
-                        title: document["title"] == null ? "JJ" : document["title"],
+                        title: document["title"] ?? "Error",
                         check: selected[index].checkValue,
                         iconBgColor: Colors.white,
                         iconColor: iconColor,

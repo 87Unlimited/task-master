@@ -1,6 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+
+import '../service/profile_controller.dart';
+import '../service/user_model.dart';
 
 class AddTodoPage extends StatefulWidget {
   const AddTodoPage({super.key});
@@ -10,19 +15,21 @@ class AddTodoPage extends StatefulWidget {
 }
 
 class _AddTodoPageState extends State<AddTodoPage> {
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   String type = "";
   String category = "";
 
 
   @override
   Widget build(BuildContext context) {
+    final profileController = Get.put(ProfileController());
+
     return Scaffold(
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             color: Color(0xffF5F6F6),
         ),
         child: SingleChildScrollView(
@@ -37,14 +44,14 @@ class _AddTodoPageState extends State<AddTodoPage> {
                     (route) => false,
                   );
                 },
-                icon: Icon(
+                icon: const Icon(
                   CupertinoIcons.arrow_left,
                   color: Color(0xff4E5058),
                   size: 28,
                 ),
               ),
               Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -71,13 +78,22 @@ class _AddTodoPageState extends State<AddTodoPage> {
                   const SizedBox(
                     height: 12,
                   ),
-                  Row(
+                  Wrap(
+                    runSpacing: 10,
                     children: [
+                      itemSelect("General", "task"),
+                      const SizedBox(
+                        width: 20,
+                      ),
                       itemSelect("Important", "task"),
                       const SizedBox(
                         width: 20,
                       ),
-                      itemSelect("Planned", "task"),
+                      itemSelect("Urgent", "task"),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      itemSelect("Long-term", "task"),
                     ],
                   ),
                   const SizedBox(
@@ -98,11 +114,11 @@ class _AddTodoPageState extends State<AddTodoPage> {
                   Wrap(
                     runSpacing: 10,
                     children: [
-                      itemSelect("Food", "category"),
+                      itemSelect("Housework", "category"),
                       const SizedBox(
                         width: 20,
                       ),
-                      itemSelect("Workout", "category"),
+                      itemSelect("Fitness", "category"),
                       const SizedBox(
                         width: 20,
                       ),
@@ -110,58 +126,73 @@ class _AddTodoPageState extends State<AddTodoPage> {
                       const SizedBox(
                         width: 20,
                       ),
-                      itemSelect("Design", "category"),
+                      itemSelect("Personal Development", "category"),
                       const SizedBox(
                         width: 20,
                       ),
-                      itemSelect("Run", "category"),
+                      itemSelect("Entertainment", "category"),
                     ],
                   ),
                   const SizedBox(
                     height: 50,
                   ),
-                  button(),
-                  const SizedBox(
+                  FutureBuilder(
+                    future: profileController.getUserData(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          if (snapshot.hasData) {
+                            UserModel user = snapshot.data as UserModel;
+                            return InkWell(
+                              onTap: () {
+                                FirebaseFirestore.instance.collection("Users").doc(user.id).collection("Todo").add({
+                                  "title": _titleController.text,
+                                  "task": type,
+                                  "category": category,
+                                  "description": _descriptionController.text,
+                                });
+                                Navigator.of(context).pushNamedAndRemoveUntil(
+                                  '/home/',
+                                      (route) => false,
+                                );
+                              },
+                              child: Container(
+                                height: 56,
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Color(0xFF2196F3),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    "Add Task",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text(snapshot.error.toString()));
+                          } else {
+                            return const Center(
+                                child: Text("Something went wrong"));
+                          }
+                        } else {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                      },
+                    ),
+                    const SizedBox(
                     width: 30,
                   ),
                 ],
               ),)
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget button() {
-    return InkWell(
-      onTap: () {
-        FirebaseFirestore.instance.collection("Todo").add({
-          "title": _titleController.text,
-          "task": type,
-          "category": category,
-          "description": _descriptionController.text,
-        });
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          '/home/',
-              (route) => false,
-        );
-      },
-      child: Container(
-        height: 56,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Color(0xFF2196F3),
-        ),
-        child: const Center(
-          child: Text(
-            "Add Task",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
           ),
         ),
       ),
@@ -188,9 +219,9 @@ class _AddTodoPageState extends State<AddTodoPage> {
           fontSize: 15,
           fontWeight: FontWeight.w600,
         ),
-        labelPadding: EdgeInsets.symmetric(
-          horizontal: 17,
-          vertical: 3.8,
+        labelPadding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 2,
         ),
       ),
     );
