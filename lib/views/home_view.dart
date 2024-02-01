@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:task_master/service/task_model.dart';
 import 'package:task_master/views/task_view.dart';
 import 'package:task_master/widget/TodoCard.dart';
 
 import '../service/profile_controller.dart';
+import '../service/task_controller.dart';
 import '../service/user_model.dart';
 
 class HomeView extends StatefulWidget {
@@ -17,6 +19,7 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   late ProfileController profileController;
+  late TaskController taskController;
   late Future<UserModel> user;
   Stream<QuerySnapshot>? _stream;
   List<Select> selected = [];
@@ -32,6 +35,7 @@ class _HomeViewState extends State<HomeView> {
 
   Future<void> getUserDataAndInitializeStream() async {
     UserModel userData = await profileController.getUserData();
+    //TaskModel taskData = await taskController.getTask();
     setState(() {
       user = Future.value(userData);
       _stream = FirebaseFirestore.instance
