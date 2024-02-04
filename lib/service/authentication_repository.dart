@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:task_master/views/home_view.dart';
 import 'package:task_master/views/login_view.dart';
 
 class AuthenticationRepository extends GetxController {
@@ -12,12 +13,12 @@ class AuthenticationRepository extends GetxController {
   void onReady() {
     firebaseUser = Rx<User?>(_auth.currentUser);
     firebaseUser.bindStream(_auth.userChanges());
-    ever(firebaseUser, _setInitialScreen);
+    //ever(firebaseUser, _setInitialScreen);
   }
 
   _setInitialScreen(User? user) {
     user == null
-        ? Get.offAll(() => const LoginView())
+        ? Get.offAll(() => const HomeView())
         : Get.offAll(() => const LoginView());
   }
 }

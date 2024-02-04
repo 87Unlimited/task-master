@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:task_master/service/user_model.dart';
@@ -10,12 +11,13 @@ class ProfileController extends GetxController {
   final _authRepo = Get.put(AuthenticationRepository());
   final _userRepo = Get.put(UserRepository());
 
-  getUserData() {
-    final email = _authRepo.firebaseUser.value?.email;
+  Future<UserModel?> getUserData() async{
+    final email = FirebaseAuth.instance.currentUser?.email;
     if (email != null) {
-      return _userRepo.getUserDetails(email);
+      return await _userRepo.getUserDetails(email);
     } else {
       Get.snackbar("Error", "Login to continue");
+      return null;
     }
   }
 

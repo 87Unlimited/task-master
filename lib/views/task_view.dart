@@ -8,9 +8,7 @@ import '../service/profile_controller.dart';
 import '../service/user_model.dart';
 
 class TaskView extends StatefulWidget {
-  const TaskView({super.key, required this.document, required this.id});
-  final Map<String, dynamic> document;
-  final String id;
+  const TaskView({super.key});
 
   @override
   State<TaskView> createState() => _TaskViewState();
@@ -29,11 +27,11 @@ class _TaskViewState extends State<TaskView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    String title = widget.document["title"] ?? "Empty Task";
-    _titleController = TextEditingController(text: title);
-    _descriptionController = TextEditingController(text: widget.document["description"]);
-    type = widget.document["task"];
-    category = widget.document["category"];
+    // String title = widget.document["title"] ?? "Empty Task";
+    // _titleController = TextEditingController(text: title);
+    // _descriptionController = TextEditingController(text: widget.document["description"]);
+    // type = widget.document["task"];
+    // category = widget.document["category"];
   }
 
 
@@ -91,19 +89,19 @@ class _TaskViewState extends State<TaskView> {
                               ),
                               IconButton(
                                 onPressed: () {
-                                  FirebaseFirestore.instance
-                                      .collection("Users")
-                                      .doc(user.id)
-                                      .collection("Todo")
-                                      .doc(widget.id)
-                                      .delete()
-                                      .then((value) => {
-                                    Navigator.of(context)
-                                        .pushNamedAndRemoveUntil(
-                                      '/home/',
-                                          (route) => false,
-                                    ),
-                                  });
+                                  // FirebaseFirestore.instance
+                                  //     .collection("Users")
+                                  //     .doc(user.id)
+                                  //     .collection("Todo")
+                                  //     .doc(widget.id)
+                                  //     .delete()
+                                  //     .then((value) => {
+                                  //   Navigator.of(context)
+                                  //       .pushNamedAndRemoveUntil(
+                                  //     '/home/',
+                                  //         (route) => false,
+                                  //   ),
+                                  // });
                                 },
                                 icon: const Icon(
                                   Icons.delete,
@@ -201,66 +199,66 @@ class _TaskViewState extends State<TaskView> {
                             const SizedBox(
                               height: 50,
                             ),
-                            edit ? InkWell(
-                              onTap: () {
-                                FirebaseFirestore.instance.collection("Users")
-                                    .doc(user.id).collection("Todo").doc(
-                                    widget.id).update({
-                                  "title": _titleController.text,
-                                  "task": type,
-                                  "category": category,
-                                  "description": _descriptionController.text,
-                                })
-                                    .whenComplete(() {
-                                  Get.snackbar(
-                                    "Success",
-                                    "Task has been updated.",
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    backgroundColor: Colors.blue.withOpacity(
-                                        0.3),
-                                    colorText: Colors.white,
-                                  );
-                                  Future.delayed(
-                                      const Duration(seconds: 1), () {
-                                    Navigator.of(context)
-                                        .pushNamedAndRemoveUntil(
-                                      '/home/',
-                                          (route) => false,
-                                    );
-                                  });
-                                }).catchError((error, stackTrace) {
-                                  Get.snackbar("Error",
-                                      "Something went wrong. Try again",
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      backgroundColor: Colors.redAccent
-                                          .withOpacity(0.1),
-                                      colorText: Colors.red
-                                  );
-                                  print("ERROR - $error");
-                                });
-                              },
-                              child: Container(
-                                height: 56,
-                                width: MediaQuery
-                                    .of(context)
-                                    .size
-                                    .width,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: const Color(0xFF2196F3),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    "Save Edit",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ) : Container(),
+                            // edit ? InkWell(
+                            //   onTap: () {
+                            //     FirebaseFirestore.instance.collection("Users")
+                            //         .doc(user.id).collection("Todo").doc(
+                            //         widget.id).update({
+                            //       "title": _titleController.text,
+                            //       "task": type,
+                            //       "category": category,
+                            //       "description": _descriptionController.text,
+                            //     })
+                            //         .whenComplete(() {
+                            //       Get.snackbar(
+                            //         "Success",
+                            //         "Task has been updated.",
+                            //         snackPosition: SnackPosition.BOTTOM,
+                            //         backgroundColor: Colors.blue.withOpacity(
+                            //             0.3),
+                            //         colorText: Colors.white,
+                            //       );
+                            //       Future.delayed(
+                            //           const Duration(seconds: 1), () {
+                            //         Navigator.of(context)
+                            //             .pushNamedAndRemoveUntil(
+                            //           '/home/',
+                            //               (route) => false,
+                            //         );
+                            //       });
+                            //     }).catchError((error, stackTrace) {
+                            //       Get.snackbar("Error",
+                            //           "Something went wrong. Try again",
+                            //           snackPosition: SnackPosition.BOTTOM,
+                            //           backgroundColor: Colors.redAccent
+                            //               .withOpacity(0.1),
+                            //           colorText: Colors.red
+                            //       );
+                            //       print("ERROR - $error");
+                            //     });
+                            //   },
+                            //   child: Container(
+                            //     height: 56,
+                            //     width: MediaQuery
+                            //         .of(context)
+                            //         .size
+                            //         .width,
+                            //     decoration: BoxDecoration(
+                            //       borderRadius: BorderRadius.circular(20),
+                            //       color: const Color(0xFF2196F3),
+                            //     ),
+                            //     child: const Center(
+                            //       child: Text(
+                            //         "Save Edit",
+                            //         style: TextStyle(
+                            //           color: Colors.white,
+                            //           fontSize: 20,
+                            //           fontWeight: FontWeight.w600,
+                            //         ),
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ) : Container(),
                             const SizedBox(
                               width: 30,
                             ),
@@ -290,33 +288,33 @@ class _TaskViewState extends State<TaskView> {
   Widget button() {
     return InkWell(
       onTap: () {
-        FirebaseFirestore.instance.collection("Todo").doc(widget.id).update({
-          "title": _titleController.text,
-          "task": type,
-          "category": category,
-          "description": _descriptionController.text,
-        }).whenComplete((){
-          Get.snackbar(
-            "Success",
-            "Task has been updated.",
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.blue.withOpacity(0.3),
-            colorText: Colors.white,
-          );
-          Future.delayed(const Duration(seconds: 1), () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              '/home/',
-                  (route) => false,
-            );
-          });
-        }).catchError((error, stackTrace){
-          Get.snackbar("Error", "Something went wrong. Try again",
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.redAccent.withOpacity(0.1),
-              colorText: Colors.red
-          );
-          print("ERROR - $error");
-        });
+        // FirebaseFirestore.instance.collection("Todo").doc(widget.id).update({
+        //   "title": _titleController.text,
+        //   "task": type,
+        //   "category": category,
+        //   "description": _descriptionController.text,
+        // }).whenComplete((){
+        //   Get.snackbar(
+        //     "Success",
+        //     "Task has been updated.",
+        //     snackPosition: SnackPosition.BOTTOM,
+        //     backgroundColor: Colors.blue.withOpacity(0.3),
+        //     colorText: Colors.white,
+        //   );
+        //   Future.delayed(const Duration(seconds: 1), () {
+        //     Navigator.of(context).pushNamedAndRemoveUntil(
+        //       '/home/',
+        //           (route) => false,
+        //     );
+        //   });
+        // }).catchError((error, stackTrace){
+        //   Get.snackbar("Error", "Something went wrong. Try again",
+        //       snackPosition: SnackPosition.BOTTOM,
+        //       backgroundColor: Colors.redAccent.withOpacity(0.1),
+        //       colorText: Colors.red
+        //   );
+        //   print("ERROR - $error");
+        // });
       },
       child: Container(
         height: 56,

@@ -9,16 +9,12 @@ import 'authentication_repository.dart';
 class TaskController extends GetxController {
   static TaskController get instance => Get.find();
 
-  final _authRepo = Get.put(AuthenticationRepository());
-  final _userRepo = Get.put(UserRepository());
   final _profile = Get.put(ProfileController());
   final _db = FirebaseFirestore.instance;
 
-  Future<List<UserModel>> getAllUsers() async => await _userRepo.allUsers();
-
   Future<List<TaskModel>> getTask() async {
-    final id = await _profile.getUserData().id;
-    final snapshot = await _db.collection("Users").doc(id).collection("Todo").get();
+    final user = await _profile.getUserData();
+    final snapshot = await _db.collection("Users").doc(user?.id).collection("Todo").get();
     final taskData = snapshot.docs.map((e) => TaskModel.fromSnapshot(e))
         .toList();
     return taskData;
