@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -126,6 +128,8 @@ class _HomeViewState extends State<HomeView> {
                   return ListView.builder(
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
+                        TaskModel task = snapshot.data![index];
+                        print("heelo" + task.toString());
                         IconData iconData;
                         Color iconColor;
                         switch (snapshot.data![index].category) {
@@ -160,7 +164,10 @@ class _HomeViewState extends State<HomeView> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (builder) => TaskView(),
+                                builder: (builder) => TaskView(
+                                  id: snapshot.data![index].id!,
+                                  task: task,
+                                ),
                               ),
                             );
                           },

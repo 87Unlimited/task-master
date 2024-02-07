@@ -20,16 +20,15 @@ class TaskController extends GetxController {
     return taskData;
   }
 
+  Future<TaskModel> getTaskDetails(String userId, String taskId) async {
+    final snapshot = await _db.collection("Users").doc(userId).collection("Todo").doc(taskId).get();
+    final taskData = TaskModel.fromSnapshot(snapshot);
+    return taskData;
+  }
+
   Future<UserModel> getUserDetails(String email) async {
     final snapshot = await _db.collection("Users").where("Email", isEqualTo: email).get();
     final userData = snapshot.docs.map((e) => UserModel.fromSnapshot(e)).single;
-    return userData;
-  }
-
-  Future<List<UserModel>> allUsers() async {
-    final snapshot = await _db.collection("Users").get();
-    final userData = snapshot.docs.map((e) => UserModel.fromSnapshot(e))
-        .toList();
     return userData;
   }
 }
