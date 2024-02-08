@@ -5,12 +5,13 @@ import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import 'package:task_master/widget/DatePicker.dart';
-
 import '../service/profile_controller.dart';
 import '../service/user_model.dart';
 
 DateTime scheduleTime = DateTime.now();
+late DateTime _date;
+DateTime _startTime = DateTime.now();
+DateTime _endTime = DateTime.now();
 
 class AddTodoPage extends StatefulWidget {
   const AddTodoPage({super.key});
@@ -147,7 +148,37 @@ class _AddTodoPageState extends State<AddTodoPage> {
                     const SizedBox(
                       height: 12,
                     ),
-                    DatePicker(),
+                    const DatePicker(),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            label("Start time"),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            TimePicker(isStartTime: true),
+                          ],
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            label("End time"),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            const TimePicker(isStartTime: false),
+                          ],
+                        )
+                      ],
+                    ),
                     const SizedBox(
                       height: 30,
                     ),
@@ -168,6 +199,9 @@ class _AddTodoPageState extends State<AddTodoPage> {
                                   "task": type,
                                   "category": category,
                                   "description": _descriptionController.text,
+                                  "date": _date,
+                                  "startTime": _startTime,
+                                  "endTime": _endTime,
                                 });
                                 Navigator.of(context).pushNamedAndRemoveUntil(
                                   '/home/',
@@ -291,23 +325,27 @@ class _AddTodoPageState extends State<AddTodoPage> {
   }
 }
 
-class DatePicker extends StatefulWidget {
-  const DatePicker({super.key});
+class TimePicker extends StatefulWidget {
+  final bool isStartTime;
+
+  const TimePicker({
+    Key? key,
+    required this.isStartTime,
+  }) : super(key: key);
 
   @override
-  State<DatePicker> createState() => _DatePickerState();
+  State<TimePicker> createState() => _TimePickerState();
 }
 
-class _DatePickerState extends State<DatePicker> {
-  DateTime dateTime = DateTime.now();
-
+class _TimePickerState extends State<TimePicker> {
+  DateTime time = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       child: Container(
         height: 56,
-        width: MediaQuery.of(context).size.width,
+        width: (MediaQuery.of(context).size.width - 70) / 2,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           color: Colors.white,
@@ -315,7 +353,7 @@ class _DatePickerState extends State<DatePicker> {
         child: Padding(
           padding: const EdgeInsets.all(15),
           child: Text(
-            DateFormat.yMMMMd('en_US').format(dateTime),
+            DateFormat.Hm().format(time),
             // "${dateTime.day} - ${dateTime.month} - ${dateTime.year}",
             style: const TextStyle(
               color: Colors.grey,
@@ -337,12 +375,86 @@ class _DatePickerState extends State<DatePicker> {
             ),
             child: CupertinoDatePicker(
               backgroundColor: Colors.white,
-              initialDateTime: dateTime,
+              initialDateTime: time,
               onDateTimeChanged: (DateTime newTime) {
-                setState(() => dateTime = newTime);
+                setState(() {
+                  time = newTime;
+                  if(widget.isStartTime){
+                    _startTime = newTime;
+                  } else {
+                    _endTime = newTime;
+                  }
+                });
+                print(time);
+                print(_startTime);
+                print(_endTime);
               },
               use24hFormat: true,
-              //mode: CupertinoDatePickerMode.time,
+              mode: CupertinoDatePickerMode.time,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class DatePicker extends StatefulWidget {
+  const DatePicker({super.key});
+
+  @override
+  State<DatePicker> createState() => _DatePickerState();
+}
+
+class _DatePickerState extends State<DatePicker> {
+  DateTime date = DateTime.now();
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      child: Container(
+        height: 56,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: Colors.white,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Text(
+            DateFormat.yMMMMd('en_US').format(date),
+            // "${dateTime.day} - ${dateTime.month} - ${dateTime.year}",
+            style: const TextStyle(
+              color: Colors.grey,
+              fontWeight: FontWeight.w500,
+              fontSize: 18,
+            ),
+          ),
+        ),
+      ),
+      onTap: () {
+        showCupertinoModalPopup(
+          context: context,
+          builder: (BuildContext context) => Container(
+            width: MediaQuery.of(context).size.width,
+            height: 250,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: CupertinoDatePicker(
+              backgroundColor: Colors.white,
+              initialDateTime: date,
+              onDateTimeChanged: (DateTime newTime) {
+                setState(() {
+                  date = newTime;
+                  _date = newTime;
+                });
+                print(date);
+                print(_date);
+              },
+              use24hFormat: true,
+              mode: CupertinoDatePickerMode.date,
             ),
           ),
         );
