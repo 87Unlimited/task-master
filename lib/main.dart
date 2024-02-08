@@ -15,8 +15,7 @@ import 'package:task_master/views/home_view.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  Get.put(AuthenticationRepository());
+  // Get.put(AuthenticationRepository());
   runApp(
     GetMaterialApp(
         title: 'Flutter Demo',
@@ -49,7 +48,7 @@ class HomePage extends StatelessWidget {
             case ConnectionState.done:
               final user = FirebaseAuth.instance.currentUser;
               if (user != null) {
-                return const HomeView();
+                return const LoginView();
               } else {
                 return const LoginView();
               }
