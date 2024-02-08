@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+
 import 'package:task_master/service/task_model.dart';
 import 'package:task_master/views/task_view.dart';
 import 'package:task_master/widget/TodoCard.dart';
@@ -36,13 +38,22 @@ class _HomeViewState extends State<HomeView> {
       appBar: AppBar(
         backgroundColor: const Color(0xffF5F6F6),
         elevation: 0,
-        title: const Text(
-          "Task Master",
-          style: TextStyle(
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-            color: Colors.blue,
-          ),
+        title: AnimatedTextKit(
+          animatedTexts: [
+            ColorizeAnimatedText(
+              'Task Master',
+              textStyle: const TextStyle(
+                fontSize: 34.0,
+                fontWeight: FontWeight.bold,
+              ),
+              colors: [
+                Colors.blue,
+                Color(0xfffffff),
+                Color(0xff0F81F0),
+                Color(0xff0072E1),
+              ],
+            )
+          ]
         ),
         actions: [
           IconButton(
