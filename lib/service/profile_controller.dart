@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,6 +10,7 @@ import 'authentication_repository.dart';
 class ProfileController extends GetxController {
   static ProfileController get instance => Get.find();
 
+  final StreamController<UserModel> _userController = StreamController<UserModel>();
   final _authRepo = Get.put(AuthenticationRepository());
   final _userRepo = Get.put(UserRepository());
 
@@ -19,6 +22,14 @@ class ProfileController extends GetxController {
       Get.snackbar("Error", "Login to continue");
       return null;
     }
+  }
+
+  Stream<UserModel> getUserDataStream() {
+    getUserData().then((user) {
+      _userController.add(user!);
+    });
+
+    return _userController.stream;
   }
 
   Future<List<UserModel>> getAllUsers() async => await _userRepo.allUsers();

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:task_master/service/profile_controller.dart';
@@ -9,6 +11,7 @@ import 'authentication_repository.dart';
 class TaskController extends GetxController {
   static TaskController get instance => Get.find();
 
+  final StreamController<TaskModel> _taskController = StreamController<TaskModel>();
   final _profile = Get.put(ProfileController());
   final _db = FirebaseFirestore.instance;
 
@@ -24,6 +27,14 @@ class TaskController extends GetxController {
     final snapshot = await _db.collection("Users").doc(userId).collection("Todo").doc(taskId).get();
     final taskData = TaskModel.fromSnapshot(snapshot);
     return taskData;
+  }
+
+  Stream<TaskModel> getTaskDetailsStream(String userId, String taskId) {
+    getTaskDetails(userId, taskId).then((task) {
+      _taskController.add(task);
+    });
+
+    return _taskController.stream;
   }
 
   Future<UserModel> getUserDetails(String email) async {
