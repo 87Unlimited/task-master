@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_master/firebase_options.dart';
 
+import 'package:timezone/data/latest.dart' as tz;
+
 import 'package:task_master/service/authentication_repository.dart';
 import 'package:task_master/views/AddTodo.dart';
 import 'package:task_master/views/login_view.dart';
@@ -14,8 +16,9 @@ import 'package:task_master/views/home_view.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // Get.put(AuthenticationRepository());
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform); // firebase initializing
+  tz.initializeTimeZones(); // time zone initializing
+
   runApp(
     GetMaterialApp(
         title: 'Flutter Demo',
@@ -23,7 +26,7 @@ void main() async{
           primaryColor: Colors.blue,
         ),
         home: const HomePage(),
-        routes: {
+        routes: {  // routes of the app
           '/login/': (context) => const LoginView(),
           '/register/': (context) => const RegisterView(),
           '/home/': (context) => const HomeView(),
