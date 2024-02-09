@@ -7,11 +7,11 @@ import 'package:intl/intl.dart';
 
 import '../service/profile_controller.dart';
 import '../service/user_model.dart';
+import '../widget/time_picker.dart';
 
-DateTime scheduleTime = DateTime.now();
-late DateTime _date;
-DateTime _startTime = DateTime.now();
-DateTime _endTime = DateTime.now();
+// DateTime scheduleTime = DateTime.now();
+DateTime _date = DateTime.now();
+
 
 class AddTodoPage extends StatefulWidget {
   const AddTodoPage({super.key});
@@ -25,6 +25,10 @@ class _AddTodoPageState extends State<AddTodoPage> {
   final TextEditingController _descriptionController = TextEditingController();
   String type = "";
   String category = "";
+
+  DateTime time = DateTime(2024, 2, 9, 12, 00);
+  DateTime startTime = DateTime(2024, 2, 9, 12, 00);
+  DateTime _endTime = DateTime(2024, 2, 9, 12, 00);
 
   @override
   Widget build(BuildContext context) {
@@ -71,97 +75,88 @@ class _AddTodoPageState extends State<AddTodoPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(
-                      height: 12,
-                    ),
+                    const SizedBox(height: 12,),
+
                     label("Task Title"),
-                    const SizedBox(
-                      height: 12,
-                    ),
+                    const SizedBox(height: 12,),
                     textItem(55, 1, _titleController),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    label("Task Type"),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Wrap(
-                      runSpacing: 10,
+
+                    const SizedBox(height: 30,),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        itemSelect("General", "task"),
-                        const SizedBox(
-                          width: 20,
+                        label("Task Type"),
+                        const SizedBox(height: 12,),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Wrap(
+                            spacing: 15,
+                            runSpacing: 0,
+                            children: [
+                              itemSelect("General", "task"),
+                              itemSelect("Important", "task"),
+                              itemSelect("Urgent", "task"),
+                              itemSelect("Long-term", "task"),
+                            ],
+                          ),
                         ),
-                        itemSelect("Important", "task"),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        itemSelect("Urgent", "task"),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        itemSelect("Long-term", "task"),
                       ],
                     ),
-                    const SizedBox(
-                      height: 30,
-                    ),
+
+                    const SizedBox(height: 30,),
+
                     label("Description"),
-                    const SizedBox(
-                      height: 12,
-                    ),
+                    const SizedBox(height: 12,),
                     textItem(155, null, _descriptionController),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    label("Category"),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Wrap(
-                      runSpacing: 10,
+
+                    const SizedBox(height: 30,),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        itemSelect("Housework", "category"),
-                        const SizedBox(
-                          width: 20,
+                        label("Category"),
+                        const SizedBox(height: 12,),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Wrap(
+                            spacing: 15,
+                            runSpacing: 0,
+                            children: [
+                              itemSelect("Education", "category"),
+                              itemSelect("Health", "category"),
+                              itemSelect("Home", "category"),
+                              itemSelect("Personal", "category"),
+                              itemSelect("Shopping", "category"),
+                              itemSelect("Social", "category"),
+                              itemSelect("Travel", "category"),
+                              itemSelect("Work", "category"),
+                            ],
+                          ),
                         ),
-                        itemSelect("Fitness", "category"),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        itemSelect("Work", "category"),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        itemSelect("Personal Development", "category"),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        itemSelect("Entertainment", "category"),
                       ],
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    const SizedBox(height: 20,),
+
                     label("Date"),
-                    const SizedBox(
-                      height: 12,
-                    ),
+                    const SizedBox(height: 12,),
                     const DatePicker(),
-                    const SizedBox(
-                      height: 20,
-                    ),
+
+                    const SizedBox(height: 20,),
                     Row(
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             label("Start time"),
-                            const SizedBox(
-                              height: 12,
+                            const SizedBox(height: 12,),
+                            TimePicker(
+                              isStartTime: true,
+                              onTimeChanged: (DateTime newTime) {
+                                setState(() {
+                                  startTime = newTime;
+                                });
+                              },
                             ),
-                            TimePicker(isStartTime: true),
                           ],
                         ),
                         const SizedBox(
@@ -171,10 +166,15 @@ class _AddTodoPageState extends State<AddTodoPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             label("End time"),
-                            const SizedBox(
-                              height: 12,
+                            const SizedBox(height: 12,),
+                            TimePicker(
+                              isStartTime: false,
+                              onTimeChanged: (DateTime newTime) {
+                                setState(() {
+                                  _endTime = newTime;
+                                });
+                              },
                             ),
-                            const TimePicker(isStartTime: false),
                           ],
                         )
                       ],
@@ -190,6 +190,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                             UserModel user = snapshot.data as UserModel;
                             return InkWell(
                               onTap: () {
+                                Timestamp startTimeTimestamp = Timestamp.fromDate(startTime);
                                 FirebaseFirestore.instance
                                     .collection("Users")
                                     .doc(user.id)
@@ -200,13 +201,15 @@ class _AddTodoPageState extends State<AddTodoPage> {
                                   "category": category,
                                   "description": _descriptionController.text,
                                   "date": _date,
-                                  "startTime": _startTime,
+                                  "startTime": startTimeTimestamp,
                                   "endTime": _endTime,
+                                }).whenComplete(() {
+                                  print(startTimeTimestamp);
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                    '/home/',
+                                        (route) => false,
+                                  );
                                 });
-                                Navigator.of(context).pushNamedAndRemoveUntil(
-                                  '/home/',
-                                  (route) => false,
-                                );
                               },
                               child: Container(
                                 height: 56,
@@ -325,80 +328,6 @@ class _AddTodoPageState extends State<AddTodoPage> {
   }
 }
 
-class TimePicker extends StatefulWidget {
-  final bool isStartTime;
-
-  const TimePicker({
-    Key? key,
-    required this.isStartTime,
-  }) : super(key: key);
-
-  @override
-  State<TimePicker> createState() => _TimePickerState();
-}
-
-class _TimePickerState extends State<TimePicker> {
-  DateTime time = DateTime.now();
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      child: Container(
-        height: 56,
-        width: (MediaQuery.of(context).size.width - 70) / 2,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Colors.white,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Text(
-            DateFormat.Hm().format(time),
-            // "${dateTime.day} - ${dateTime.month} - ${dateTime.year}",
-            style: const TextStyle(
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
-              fontSize: 18,
-            ),
-          ),
-        ),
-      ),
-      onTap: () {
-        showCupertinoModalPopup(
-          context: context,
-          builder: (BuildContext context) => Container(
-            width: MediaQuery.of(context).size.width,
-            height: 250,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: CupertinoDatePicker(
-              backgroundColor: Colors.white,
-              initialDateTime: time,
-              onDateTimeChanged: (DateTime newTime) {
-                setState(() {
-                  time = newTime;
-                  if(widget.isStartTime){
-                    _startTime = newTime;
-                  } else {
-                    _endTime = newTime;
-                  }
-                });
-                print(time);
-                print(_startTime);
-                print(_endTime);
-              },
-              use24hFormat: true,
-              mode: CupertinoDatePickerMode.time,
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
 class DatePicker extends StatefulWidget {
   const DatePicker({super.key});
 
@@ -421,14 +350,27 @@ class _DatePickerState extends State<DatePicker> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(15),
-          child: Text(
-            DateFormat.yMMMMd('en_US').format(date),
-            // "${dateTime.day} - ${dateTime.month} - ${dateTime.year}",
-            style: const TextStyle(
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
-              fontSize: 18,
-            ),
+          child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    DateFormat.yMMMMd('en_US').format(date),
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+                const Align(
+                  alignment: Alignment.centerRight,
+                  child: Icon(
+                    CupertinoIcons.calendar,
+                    size: 24,
+                    color: Colors.blue,
+                  ),
+                ),
+              ]
           ),
         ),
       ),
@@ -446,11 +388,11 @@ class _DatePickerState extends State<DatePicker> {
               backgroundColor: Colors.white,
               initialDateTime: date,
               onDateTimeChanged: (DateTime newTime) {
+                DateFormat.yMMMMd('en_US').format(_date);
                 setState(() {
                   date = newTime;
                   _date = newTime;
                 });
-                print(date);
                 print(_date);
               },
               use24hFormat: true,

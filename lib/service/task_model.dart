@@ -6,6 +6,9 @@ class TaskModel {
   final String description;
   final String task;
   final String title;
+  final Timestamp date;
+  final Timestamp startTime;
+  final Timestamp endTime;
 
   const TaskModel({
     this.id,
@@ -13,6 +16,9 @@ class TaskModel {
     required this.description,
     required this.task,
     required this.title,
+    required this.date,
+    required this.startTime,
+    required this.endTime,
   });
 
   toJson() {
@@ -21,6 +27,9 @@ class TaskModel {
       "description": description,
       "task": task,
       "title": title,
+      "date": date,
+      "startTime": startTime,
+      "endTime": endTime,
     };
   }
 
@@ -33,6 +42,9 @@ class TaskModel {
       description: data["description"],
       task: data["task"],
       title: data["title"],
+      date: data["date"],
+      startTime: data["startTime"],
+      endTime: data["endTime"],
     );
   }
 }

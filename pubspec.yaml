@@ -55,6 +55,7 @@ dependencies:
   flutter_datetime_picker_plus: ^2.1.0
   timezone: ^0.9.2
   intl: ^0.18.1
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:

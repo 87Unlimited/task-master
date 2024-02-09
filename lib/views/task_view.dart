@@ -28,8 +28,11 @@ class _TaskViewState extends State<TaskView> {
   late TextEditingController _descriptionController;
   late String _category;
   late String _type;
-  late Future<UserModel?> _userFuture;
+  late Timestamp _date;
+  late Timestamp _startTime;
+  late Timestamp _endTime;
 
+  late Future<UserModel?> _userFuture;
   bool edit = false;
 
   final profileController = Get.put(ProfileController());
@@ -55,6 +58,13 @@ class _TaskViewState extends State<TaskView> {
       _descriptionController = TextEditingController(text: task.description ?? "Empty Description");
       _category = task.category;
       _type = task.task;
+      _date = task.date;
+      _startTime = task.startTime;
+      _endTime = task.endTime;
+
+      _date.toDate();
+      _startTime.toDate();
+      _endTime.toDate();
     } else {
       _titleController = TextEditingController(text: "Empty Title");
       _descriptionController = TextEditingController(text: "Empty Description");
@@ -92,12 +102,6 @@ class _TaskViewState extends State<TaskView> {
                   future: taskController.getTaskDetails(userId, widget.id),
                   builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        TaskModel task = snapshot.data as TaskModel;
-                        final title = TextEditingController(text: task.title);
-                        final description = TextEditingController(text: task.description ?? "Empty Description");
-                        final category = task.category;
-                        final type = task.task;
-
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:task_master/service/task_model.dart';
 import 'package:task_master/views/task_view.dart';
@@ -48,9 +49,9 @@ class _HomeViewState extends State<HomeView> {
               ),
               colors: [
                 Colors.blue,
-                Color(0xfffffff),
-                Color(0xff0F81F0),
-                Color(0xff0072E1),
+                const Color(0x0fffffff),
+                const Color(0xff0F81F0),
+                const Color(0xff0072E1),
               ],
             )
           ]
@@ -140,28 +141,52 @@ class _HomeViewState extends State<HomeView> {
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
                         TaskModel task = snapshot.data![index];
-                        print("heelo" + task.toString());
+
+                        // get date and time Timestamp data from firebase
+                        Timestamp dateData = snapshot.data![index].date;
+                        Timestamp startTimeData = snapshot.data![index].startTime;
+                        Timestamp endTimeData = snapshot.data![index].endTime;
+
+                        // convert Timestamp to Datetime
+                        final date = dateData.toDate();
+                        final startTime = startTimeData.toDate();
+                        final endTime = endTimeData.toDate();
+
                         IconData iconData;
                         Color iconColor;
+
+                        // set different icon and color by category
                         switch (snapshot.data![index].category) {
-                          case "Housework":
-                            iconData = LineAwesomeIcons.broom;
-                            iconColor = Colors.black;
+                          case "Education":
+                            iconData = FontAwesomeIcons.book;
+                            iconColor = Colors.lime;
                             break;
-                          case "Fitness":
-                            iconData = LineAwesomeIcons.running;
-                            iconColor = Colors.black;
+                          case "Health":
+                            iconData = FontAwesomeIcons.notesMedical;
+                            iconColor = Colors.green;
+                            break;
+                          case "Home":
+                            iconData = FontAwesomeIcons.houseChimneyUser;
+                            iconColor = Colors.yellow;
+                            break;
+                          case "Personal":
+                            iconData = FontAwesomeIcons.userLarge;
+                            iconColor = Colors.red;
+                            break;
+                          case "Shopping":
+                            iconData = FontAwesomeIcons.cartShopping;
+                            iconColor = Colors.purple;
+                            break;
+                          case "Social":
+                            iconData = FontAwesomeIcons.users;
+                            iconColor = Colors.blue;
+                            break;
+                          case "Travel":
+                            iconData = FontAwesomeIcons.plane;
+                            iconColor = Colors.amber;
                             break;
                           case "Work":
-                            iconData = LineAwesomeIcons.briefcase;
-                            iconColor = Colors.black;
-                            break;
-                          case "Personal Development":
-                            iconData = LineAwesomeIcons.school;
-                            iconColor = Colors.black;
-                            break;
-                          case "Entertainment":
-                            iconData = LineAwesomeIcons.gamepad;
+                            iconData = FontAwesomeIcons.briefcase;
                             iconColor = Colors.black;
                             break;
                           default:
@@ -184,11 +209,12 @@ class _HomeViewState extends State<HomeView> {
                           },
                           child: TodoCard(
                             title: snapshot.data![index].title,
+                            date: date,
                             check: selected[index].checkValue,
-                            iconBgColor: Colors.white,
                             iconColor: iconColor,
                             iconData: iconData,
-                            time: "11 AM",
+                            startTime: startTime,
+                            endTime: endTime,
                             index: index,
                             onChange: onChange,
                           ),
