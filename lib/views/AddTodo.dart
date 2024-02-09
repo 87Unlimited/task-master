@@ -8,10 +8,7 @@ import 'package:intl/intl.dart';
 import '../service/profile_controller.dart';
 import '../service/user_model.dart';
 import '../widget/time_picker.dart';
-
-// DateTime scheduleTime = DateTime.now();
-DateTime _date = DateTime.now();
-
+import '../widget/date_picker.dart';
 
 class AddTodoPage extends StatefulWidget {
   const AddTodoPage({super.key});
@@ -28,7 +25,8 @@ class _AddTodoPageState extends State<AddTodoPage> {
 
   DateTime time = DateTime(2024, 2, 9, 12, 00);
   DateTime startTime = DateTime(2024, 2, 9, 12, 00);
-  DateTime _endTime = DateTime(2024, 2, 9, 12, 00);
+  DateTime endTime = DateTime(2024, 2, 9, 12, 00);
+  DateTime date = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +60,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                 ),
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -75,8 +72,8 @@ class _AddTodoPageState extends State<AddTodoPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 12,),
 
+                    const SizedBox(height: 12,),
                     label("Task Title"),
                     const SizedBox(height: 12,),
                     textItem(55, 1, _titleController),
@@ -108,7 +105,6 @@ class _AddTodoPageState extends State<AddTodoPage> {
                     label("Description"),
                     const SizedBox(height: 12,),
                     textItem(155, null, _descriptionController),
-
                     const SizedBox(height: 30,),
 
                     Column(
@@ -137,9 +133,20 @@ class _AddTodoPageState extends State<AddTodoPage> {
                     ),
                     const SizedBox(height: 20,),
 
-                    label("Date"),
-                    const SizedBox(height: 12,),
-                    const DatePicker(),
+                    Column(
+                      children: [
+                        label("Date"),
+                        const SizedBox(height: 12,),
+                        CalendarPicker(
+                          initialDate: date,
+                          onTimeChanged: (DateTime newTime) {
+                            setState(() {
+                              date = newTime;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
 
                     const SizedBox(height: 20,),
                     Row(
@@ -151,6 +158,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                             const SizedBox(height: 12,),
                             TimePicker(
                               isStartTime: true,
+                              initialTime: startTime,
                               onTimeChanged: (DateTime newTime) {
                                 setState(() {
                                   startTime = newTime;
@@ -169,9 +177,10 @@ class _AddTodoPageState extends State<AddTodoPage> {
                             const SizedBox(height: 12,),
                             TimePicker(
                               isStartTime: false,
+                              initialTime: startTime,
                               onTimeChanged: (DateTime newTime) {
                                 setState(() {
-                                  _endTime = newTime;
+                                  endTime = newTime;
                                 });
                               },
                             ),
@@ -190,7 +199,12 @@ class _AddTodoPageState extends State<AddTodoPage> {
                             UserModel user = snapshot.data as UserModel;
                             return InkWell(
                               onTap: () {
+                                // convert DateTime to Timestamp
+                                Timestamp dateTimestamp = Timestamp.fromDate(date);
                                 Timestamp startTimeTimestamp = Timestamp.fromDate(startTime);
+                                Timestamp endTimeTimestamp = Timestamp.fromDate(endTime);
+
+                                // add data to firebase collection
                                 FirebaseFirestore.instance
                                     .collection("Users")
                                     .doc(user.id)
@@ -200,11 +214,19 @@ class _AddTodoPageState extends State<AddTodoPage> {
                                   "task": type,
                                   "category": category,
                                   "description": _descriptionController.text,
-                                  "date": _date,
+                                  "date": dateTimestamp,
                                   "startTime": startTimeTimestamp,
-                                  "endTime": _endTime,
+                                  "endTime": endTimeTimestamp,
                                 }).whenComplete(() {
-                                  print(startTimeTimestamp);
+                                  Get.snackbar(
+                                    "Success",
+                                    "Task has been created.",
+                                    snackPosition:
+                                    SnackPosition.BOTTOM,
+                                    backgroundColor: Colors.blue
+                                        .withOpacity(0.3),
+                                    colorText: Colors.white,
+                                  );
                                   Navigator.of(context).pushNamedAndRemoveUntil(
                                     '/home/',
                                         (route) => false,
@@ -324,83 +346,6 @@ class _AddTodoPageState extends State<AddTodoPage> {
         fontSize: 20,
         letterSpacing: 0.2,
       ),
-    );
-  }
-}
-
-class DatePicker extends StatefulWidget {
-  const DatePicker({super.key});
-
-  @override
-  State<DatePicker> createState() => _DatePickerState();
-}
-
-class _DatePickerState extends State<DatePicker> {
-  DateTime date = DateTime.now();
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      child: Container(
-        height: 56,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Colors.white,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    DateFormat.yMMMMd('en_US').format(date),
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-                const Align(
-                  alignment: Alignment.centerRight,
-                  child: Icon(
-                    CupertinoIcons.calendar,
-                    size: 24,
-                    color: Colors.blue,
-                  ),
-                ),
-              ]
-          ),
-        ),
-      ),
-      onTap: () {
-        showCupertinoModalPopup(
-          context: context,
-          builder: (BuildContext context) => Container(
-            width: MediaQuery.of(context).size.width,
-            height: 250,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: CupertinoDatePicker(
-              backgroundColor: Colors.white,
-              initialDateTime: date,
-              onDateTimeChanged: (DateTime newTime) {
-                DateFormat.yMMMMd('en_US').format(_date);
-                setState(() {
-                  date = newTime;
-                  _date = newTime;
-                });
-                print(_date);
-              },
-              use24hFormat: true,
-              mode: CupertinoDatePickerMode.date,
-            ),
-          ),
-        );
-      },
     );
   }
 }

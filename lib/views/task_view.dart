@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:task_master/service/task_model.dart';
+import 'package:task_master/widget/date_picker.dart';
 
 import '../service/profile_controller.dart';
 import '../service/task_controller.dart';
 import '../service/user_model.dart';
+import '../widget/time_picker.dart';
 
 class TaskView extends StatefulWidget {
   final TaskModel task;
@@ -28,9 +30,9 @@ class _TaskViewState extends State<TaskView> {
   late TextEditingController _descriptionController;
   late String _category;
   late String _type;
-  late Timestamp _date;
-  late Timestamp _startTime;
-  late Timestamp _endTime;
+  late DateTime _date;
+  late DateTime _startTime;
+  late DateTime _endTime;
 
   late Future<UserModel?> _userFuture;
   bool edit = false;
@@ -53,22 +55,17 @@ class _TaskViewState extends State<TaskView> {
     final userId = userModel?.id ?? "";
 
     final task = await taskController.getTaskDetails(userId, widget.id); // wait for the data of task
-    if (task != null) {
-      _titleController = TextEditingController(text: task.title);
-      _descriptionController = TextEditingController(text: task.description ?? "Empty Description");
-      _category = task.category;
-      _type = task.task;
-      _date = task.date;
-      _startTime = task.startTime;
-      _endTime = task.endTime;
+    _titleController = TextEditingController(text: task.title);
+    _descriptionController = TextEditingController(text: task.description ?? "Empty Description");
+    _category = task.category;
+    _type = task.task;
+    Timestamp dateData = task.date;
+    Timestamp startTimeData = task.startTime;
+    Timestamp endTimeData = task.endTime;
 
-      _date.toDate();
-      _startTime.toDate();
-      _endTime.toDate();
-    } else {
-      _titleController = TextEditingController(text: "Empty Title");
-      _descriptionController = TextEditingController(text: "Empty Description");
-    }
+    _date = dateData.toDate();
+    _startTime = startTimeData.toDate();
+    _endTime = endTimeData.toDate();
   }
 
   @override
@@ -102,6 +99,8 @@ class _TaskViewState extends State<TaskView> {
                   future: taskController.getTaskDetails(userId, widget.id),
                   builder: (context, snapshot) {
                       if (snapshot.hasData) {
+
+
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -176,77 +175,119 @@ class _TaskViewState extends State<TaskView> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
+
+                                  const SizedBox(height: 12,),
                                   label("Task Title"),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
+                                  const SizedBox(height: 12,),
                                   textItem(55, 1, _titleController),
-                                  const SizedBox(
-                                    height: 30,
-                                  ),
-                                  label("Task Type"),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
-                                  Wrap(
-                                    runSpacing: 10,
+                                  const SizedBox(height: 30,),
+
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      itemSelect("General", "task"),
-                                      const SizedBox(
-                                        width: 20,
+                                      label("Task Type"),
+                                      const SizedBox(height: 12,),
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Wrap(
+                                          spacing: 15,
+                                          runSpacing: 0,
+                                          children: [
+                                            itemSelect("General", "task"),
+                                            itemSelect("Important", "task"),
+                                            itemSelect("Urgent", "task"),
+                                            itemSelect("Long-term", "task"),
+                                          ],
+                                        ),
                                       ),
-                                      itemSelect("Important", "task"),
-                                      const SizedBox(
-                                        width: 20,
-                                      ),
-                                      itemSelect("Urgent", "task"),
-                                      const SizedBox(
-                                        width: 20,
-                                      ),
-                                      itemSelect("Long-term", "task"),
                                     ],
                                   ),
-                                  const SizedBox(
-                                    height: 30,
-                                  ),
+
+                                  const SizedBox(height: 30,),
+
                                   label("Description"),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
+                                  const SizedBox(height: 12,),
                                   textItem(155, null, _descriptionController),
-                                  const SizedBox(
-                                    height: 30,
-                                  ),
-                                  label("Category"),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
-                                  Wrap(
-                                    runSpacing: 10,
+                                  const SizedBox(height: 30,),
+
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      itemSelect("Housework", "category"),
-                                      const SizedBox(
-                                        width: 20,
+                                      label("Category"),
+                                      const SizedBox(height: 12,),
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Wrap(
+                                          spacing: 15,
+                                          runSpacing: 0,
+                                          children: [
+                                            itemSelect("Education", "category"),
+                                            itemSelect("Health", "category"),
+                                            itemSelect("Home", "category"),
+                                            itemSelect("Personal", "category"),
+                                            itemSelect("Shopping", "category"),
+                                            itemSelect("Social", "category"),
+                                            itemSelect("Travel", "category"),
+                                            itemSelect("Work", "category"),
+                                          ],
+                                        ),
                                       ),
-                                      itemSelect("Fitness", "category"),
-                                      const SizedBox(
-                                        width: 20,
-                                      ),
-                                      itemSelect("Work", "category"),
-                                      const SizedBox(
-                                        width: 20,
-                                      ),
-                                      itemSelect(
-                                          "Personal Development", "category"),
-                                      const SizedBox(
-                                        width: 20,
-                                      ),
-                                      itemSelect("Entertainment", "category"),
                                     ],
                                   ),
+                                  const SizedBox(height: 20,),
+
+                                  label("Date"),
+                                  const SizedBox(height: 12,),
+                                  CalendarPicker(
+                                    initialDate: _date,
+                                    onTimeChanged: (DateTime newTime) {
+                                      setState(() {
+                                        _date = newTime;
+                                      });
+                                    },
+                                  ),
+
+                                  const SizedBox(height: 20,),
+                                  Row(
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          label("Start time"),
+                                          const SizedBox(height: 12,),
+                                          TimePicker(
+                                            isStartTime: true,
+                                            initialTime: _startTime,
+                                            onTimeChanged: (DateTime newTime) {
+                                              setState(() {
+                                                _startTime = newTime;
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          label("End time"),
+                                          const SizedBox(height: 12,),
+                                          TimePicker(
+                                            isStartTime: false,
+                                            initialTime: _endTime,
+                                            onTimeChanged: (DateTime newTime) {
+                                              setState(() {
+                                                _endTime = newTime;
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+
                                   const SizedBox(
                                     height: 50,
                                   ),
@@ -279,6 +320,11 @@ class _TaskViewState extends State<TaskView> {
   Widget submitUpdateButton(String userId) {
     return InkWell(
       onTap: () {
+        // convert DateTime to Timestamp
+        Timestamp dateTimestamp = Timestamp.fromDate(_date);
+        Timestamp startTimeTimestamp = Timestamp.fromDate(_startTime);
+        Timestamp endTimeTimestamp = Timestamp.fromDate(_endTime);
+
         FirebaseFirestore.instance
             .collection("Users")
             .doc(userId)
@@ -289,6 +335,9 @@ class _TaskViewState extends State<TaskView> {
           "task": _type,
           "category": _category,
           "description": _descriptionController.text,
+          "date": dateTimestamp,
+          "startTime": startTimeTimestamp,
+          "endTime": endTimeTimestamp,
         }).whenComplete(() {
           Get.snackbar(
             "Success",
@@ -299,8 +348,7 @@ class _TaskViewState extends State<TaskView> {
                 .withOpacity(0.3),
             colorText: Colors.white,
           );
-          Future.delayed(
-              const Duration(seconds: 1), () {
+          Future.delayed(const Duration(seconds: 1), () {
             Navigator.of(context)
                 .pushNamedAndRemoveUntil(
               '/home/',
