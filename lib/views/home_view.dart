@@ -8,6 +8,8 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:task_master/service/task_model.dart';
+import 'package:task_master/views/AddTodo.dart';
+import 'package:task_master/views/profile_view.dart';
 import 'package:task_master/views/task_view.dart';
 import 'package:task_master/widget/TodoCard.dart';
 
@@ -61,10 +63,7 @@ class _HomeViewState extends State<HomeView> {
             onPressed: () {},
             icon: InkWell(
               onTap: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/profile/',
-                  (route) => false,
-                );
+                Get.to(() => ProfileView(), transition: Transition.zoom);
               },
               child: const Icon(
                 Icons.person,
@@ -86,12 +85,13 @@ class _HomeViewState extends State<HomeView> {
           label: "",
         ),
         BottomNavigationBarItem(
-          icon: InkWell(
+          icon: GestureDetector(
             onTap: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                '/addTodo/',
-                (route) => false,
-              );
+              // Navigator.of(context).pushNamedAndRemoveUntil(
+              //   '/addTodo/',
+              //   (route) => false,
+              // );
+              Get.to(() => AddTodoPage(), transition: Transition.zoom);
             },
             child: Container(
               height: 52,
@@ -195,16 +195,13 @@ class _HomeViewState extends State<HomeView> {
                         }
                         selected.add(Select(
                             id: snapshot.data![index].id!, checkValue: false));
-                        return InkWell(
+                        return GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (builder) => TaskView(
-                                  id: snapshot.data![index].id!,
-                                  task: task,
-                                ),
-                              ),
+                            Get.to(() => TaskView(
+                              id: snapshot.data![index].id!,
+                              task: task,
+                            ),
+                              transition: Transition.rightToLeft,
                             );
                           },
                           child: TodoCard(

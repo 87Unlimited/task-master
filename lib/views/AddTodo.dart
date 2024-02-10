@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:task_master/service/notification_services.dart';
+import 'package:task_master/views/home_view.dart';
 
 import '../service/profile_controller.dart';
 import '../service/user_model.dart';
+import '../service/notification_services.dart';
+import '../widget/switch_button.dart';
 import '../widget/time_picker.dart';
 import '../widget/date_picker.dart';
 
@@ -18,15 +22,23 @@ class AddTodoPage extends StatefulWidget {
 }
 
 class _AddTodoPageState extends State<AddTodoPage> {
+  NotificationsServices notificationServices = NotificationsServices();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   String type = "";
   String category = "";
 
   DateTime time = DateTime(2024, 2, 9, 12, 00);
-  DateTime startTime = DateTime(2024, 2, 9, 12, 00);
+  DateTime startTime = DateTime.now();
   DateTime endTime = DateTime(2024, 2, 9, 12, 00);
   DateTime date = DateTime.now();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    notificationServices.initializeNotifications();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +60,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
               ),
               IconButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/home/',
-                    (route) => false,
-                  );
+                  Get.to(() => HomeView(), transition: Transition.downToUp);
                 },
                 icon: const Icon(
                   CupertinoIcons.arrow_left,
@@ -134,6 +143,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                     const SizedBox(height: 20,),
 
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         label("Date"),
                         const SizedBox(height: 12,),
@@ -177,7 +187,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                             const SizedBox(height: 12,),
                             TimePicker(
                               isStartTime: false,
-                              initialTime: startTime,
+                              initialTime: endTime,
                               onTimeChanged: (DateTime newTime) {
                                 setState(() {
                                   endTime = newTime;
@@ -185,9 +195,18 @@ class _AddTodoPageState extends State<AddTodoPage> {
                               },
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
+                    const SizedBox(height: 12,),
+                    ElevatedButton(
+                      onPressed: (){
+                        print(startTime);
+                        notificationServices.sendNotification("${_titleController.text} ", _descriptionController.text);
+                      },
+                      child: const Text('Send notification'),
+                    ),
+                    // SwitchButton(),
                     const SizedBox(
                       height: 30,
                     ),

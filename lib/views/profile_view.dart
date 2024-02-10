@@ -6,6 +6,7 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../service/profile_controller.dart';
 import '../service/user_model.dart';
 import 'edit_profile_view.dart';
+import 'home_view.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -30,10 +31,7 @@ class _ProfileViewState extends State<ProfileView> {
         elevation: 0,
         leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                '/home/',
-                    (route) => false,
-              );
+              Get.to(() => HomeView(), transition: Transition.leftToRight);
             },
             icon: const Icon(
               LineAwesomeIcons.angle_left,

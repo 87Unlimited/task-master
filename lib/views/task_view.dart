@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:task_master/service/task_model.dart';
+import 'package:task_master/views/home_view.dart';
 import 'package:task_master/widget/date_picker.dart';
 
 import '../service/profile_controller.dart';
@@ -99,8 +100,6 @@ class _TaskViewState extends State<TaskView> {
                   future: taskController.getTaskDetails(userId, widget.id),
                   builder: (context, snapshot) {
                       if (snapshot.hasData) {
-
-
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -110,11 +109,7 @@ class _TaskViewState extends State<TaskView> {
                               children: [
                                 IconButton(
                                   onPressed: () {
-                                    Navigator.of(context)
-                                        .pushNamedAndRemoveUntil(
-                                      '/home/',
-                                          (route) => false,
-                                    );
+                                    Get.to(() => HomeView(), transition: Transition.leftToRight);
                                   },
                                   icon: const Icon(
                                     LineAwesomeIcons.angle_left,

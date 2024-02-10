@@ -92,10 +92,10 @@ class _LoginViewState extends State<LoginView> {
           setState(() {
             circular = true;
           });
-          // final email = _email.text;
-          // final password = _password.text;
-          final email = "bbb123jack@gmail.com";
-          final password = "Jackjack803";
+          final email = _email.text;
+          final password = _password.text;
+          // final email = "bbb123jack@gmail.com";
+          // final password = "Jackjack803";
 
           try {
             await FirebaseAuth.instance.signInWithEmailAndPassword(
