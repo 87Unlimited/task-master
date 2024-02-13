@@ -253,7 +253,7 @@ class profileWidget extends StatelessWidget {
         style: const TextStyle(
           color: Colors.black,
           fontSize: 20,
-        )?.apply(color: textColor),
+        ).apply(color: textColor),
       ),
       trailing: endIcon? Container(
         width: 30,

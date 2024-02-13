@@ -1,16 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:task_master/service/notification_services.dart';
 import 'package:task_master/views/home_view.dart';
 
 import '../service/profile_controller.dart';
 import '../service/user_model.dart';
-import '../service/notification_services.dart';
-import '../widget/switch_button.dart';
 import '../widget/time_picker.dart';
 import '../widget/date_picker.dart';
 
@@ -63,7 +59,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                   Get.to(() => HomeView(), transition: Transition.downToUp);
                 },
                 icon: const Icon(
-                  CupertinoIcons.arrow_left,
+                  LineAwesomeIcons.angle_left,
                   color: Color(0xff4E5058),
                   size: 28,
                 ),
@@ -85,7 +81,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                     const SizedBox(height: 12,),
                     label("Task Title"),
                     const SizedBox(height: 12,),
-                    textItem(55, 1, _titleController),
+                    textItem(55, 1, _titleController, "addTitle"),
 
                     const SizedBox(height: 30,),
                     Column(
@@ -113,7 +109,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
 
                     label("Description"),
                     const SizedBox(height: 12,),
-                    textItem(155, null, _descriptionController),
+                    textItem(155, null, _descriptionController, "addDescription"),
                     const SizedBox(height: 30,),
 
                     Column(
@@ -217,6 +213,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                           if (snapshot.hasData) {
                             UserModel user = snapshot.data as UserModel;
                             return InkWell(
+                              key: const Key("addButton"),
                               onTap: () {
                                 // convert DateTime to Timestamp
                                 Timestamp dateTimestamp = Timestamp.fromDate(date);
@@ -330,7 +327,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
   }
 
   Widget textItem(
-      double height, int? maxLines, TextEditingController controller) {
+      double height, int? maxLines, TextEditingController controller, String key) {
     return Container(
       height: height,
       width: MediaQuery.of(context).size.width,
@@ -339,6 +336,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextFormField(
+        key: Key(key),
         controller: controller,
         maxLines: maxLines,
         decoration: const InputDecoration(

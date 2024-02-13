@@ -57,7 +57,7 @@ class _TaskViewState extends State<TaskView> {
 
     final task = await taskController.getTaskDetails(userId, widget.id); // wait for the data of task
     _titleController = TextEditingController(text: task.title);
-    _descriptionController = TextEditingController(text: task.description ?? "Empty Description");
+    _descriptionController = TextEditingController(text: task.description);
     _category = task.category;
     _type = task.task;
     Timestamp dateData = task.date;
