@@ -1,6 +1,7 @@
 # task_master
 
 A todo application.
+This application was mainly developed on the android platform, please use the android simulator to open it.
 Student No.: 237041272
 
 ## Getting Started
